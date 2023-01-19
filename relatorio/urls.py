@@ -5,7 +5,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('forms/', views.forms, name='forms'),
     path('processa_formulario/', views.processa_formulario, name="processa_formulario"),
-    path('listagem/', views.listagem, name="listagem"),
     path('deletar/<int:id>', views.deletar, name="deletar"),
-    path('buscar', views.buscar, name='buscar')
+    path('listagem/buscar', views.buscar, name='buscar'),
+    path('listagem2/', views.listagem2, name="listagem2")
 ]

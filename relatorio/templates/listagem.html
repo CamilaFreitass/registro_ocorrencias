@@ -19,7 +19,7 @@
     <div class="row justify-contente-start">
     <div class="row align-items-center">
     <div class="col">
-    <table class="table table-striped">
+    <table class="table table-striped" id="tabela-listar">
         <thead>
             <tr>
               <th scope="col">Sistema</th>
@@ -27,6 +27,7 @@
               <th scope="col">Ocorrência</th>
               <th scope="col">ALO</th>
               <th scope="col">CPC</th>
+              <th><button type="submit"><i class="fa-solid fa-sort"></i></button></th>
             </tr>
         </thead>
         <tbody>
@@ -47,6 +48,9 @@
             </tr>
         {% endfor %}
         {% else %}
+        <div>
+          <p>Registro não encontrado</p>
+        </div>
         {% endif %}
         </tbody>
     </table>
@@ -57,4 +61,7 @@
     </div>
     </div>
     </div>
+
 {% endblock %}
+
+
