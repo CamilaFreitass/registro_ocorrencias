@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-
+{% load static %}
    <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -27,7 +27,11 @@
               <th scope="col">Ocorrência</th>
               <th scope="col">ALO</th>
               <th scope="col">CPC</th>
-              <th><button type="submit"><i class="fa-solid fa-sort"></i></button></th>
+              <th>
+                  <form action="{% url 'buscar' %}">
+                    <button type="submit" name="ordenar" value="ocorrencia" id="botao1"><span class="material-icons"></span></button>
+                  </form>
+              </th>
             </tr>
         </thead>
         <tbody>

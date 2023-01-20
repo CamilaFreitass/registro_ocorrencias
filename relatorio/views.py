@@ -24,17 +24,9 @@ def processa_formulario(request):
                                       alo=alo,
                                       cpc=cpc,)
         discador.save()
-        return redirect('/listagem/')
+        return redirect('/buscar')
     else:
         return HttpResponse('Erro interno')
-
-#
-# def listagem (request):
-#     registros = DiscadorOcorrencia.objects.all()
-#
-#     dados = {'registros': registros}
-#
-#     return render(request, 'listagem.html', dados)
 
 
 def deletar(request, id):
@@ -45,14 +37,20 @@ def deletar(request, id):
 
 
 def buscar(request):
+    # pega o parametro "ordenar" e armazena na variável ordenar
+    ordenar = request.GET.get('ordenar')
+
     # pega o parametro "buscar" e armazena na variável busca
     busca = request.GET.get('buscar')
 
     # confere se há alguma coisa na busca
     if busca:
-
         # se tiver algo na busca ele vai fazer um filtro para verificar se algum registro bate com o que foi passado
         lista_registros = DiscadorOcorrencia.objects.filter(sistema__icontains=busca)
+
+    elif ordenar:
+        lista_registros = DiscadorOcorrencia.objects.order_by('ocorrencia')
+
     else:
         # se não tiver nada na busca ele vai trazer tudo
         lista_registros = DiscadorOcorrencia.objects.all()
@@ -72,15 +70,5 @@ def listagem2(request):
     return render(request, 'listagem2.html', dados2)
 
 
-def ordenar(request):
-    lista_registros = DiscadorOcorrencia.objects.all()
 
-    ordem = request.GET.get('ordenar')
-    if ordem:
-        lista_registros = DiscadorOcorrencia.objects.order_by('ocorrencia').filter()
 
-    dados = {
-        'registros': lista_registros
-    }
-
-    return render(request, 'listagem.html', dados)
