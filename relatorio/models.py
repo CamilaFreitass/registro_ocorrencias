@@ -9,12 +9,22 @@ from django.db import models
 
 
 class DiscadorOcorrencia(models.Model):
-    sistema = models.TextField()
     carteira = models.TextField()
+    sist = models.ForeignKey('Sistema', models.DO_NOTHING, db_column='SIST')  # Field name made lowercase.
     ocorrencia = models.IntegerField()
     alo = models.IntegerField()
     cpc = models.IntegerField()
 
     class Meta:
-        managed = True
         db_table = 'DISCADOR_OCORRENCIA'
+
+
+class Sistema(models.Model):
+    codigo = models.AutoField(primary_key=True)
+    nome_sistema = models.IntegerField(unique=True)
+
+    class Meta:
+        db_table = 'SISTEMA'
+
+    def __str__(self):
+        return self.nome_sistema
