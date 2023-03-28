@@ -10,7 +10,7 @@ from django.db import models
 
 class DiscadorOcorrencia(models.Model):
     carteira = models.TextField()
-    sist = models.ForeignKey('Sistema', models.DO_NOTHING, db_column='SIST')  # Field name made lowercase.
+    sist = models.ForeignKey('Sistema', models.DO_NOTHING, db_column='SIST', related_name='sistemas')  # Field name made lowercase.
     ocorrencia = models.IntegerField()
     alo = models.IntegerField()
     cpc = models.IntegerField()
@@ -21,7 +21,7 @@ class DiscadorOcorrencia(models.Model):
 
 class Sistema(models.Model):
     codigo = models.AutoField(primary_key=True)
-    nome_sistema = models.IntegerField(unique=True)
+    nome_sistema = models.TextField(unique=True)
 
     class Meta:
         db_table = 'SISTEMA'
