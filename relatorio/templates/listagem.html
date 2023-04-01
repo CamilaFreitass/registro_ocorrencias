@@ -94,6 +94,21 @@
                       {% endif %}
                   </form>
               </th>
+              <th scope="col">
+                  <form method="GET">
+                      Promessa
+                      <input type="hidden" name="buscar" value="{{buscar}}">
+                      {% if urlx == '-promessa' %}
+                        <button class="btn btn-light" type="submit" name="ordenar" value="promessa">
+                            <span class="material-icons">arrow_drop_up</span>
+                        </button>
+                      {% else %}
+                        <button class="btn btn-light" type="submit" name="ordenar" value="-promessa">
+                            <span class="material-icons">arrow_drop_down</span>
+                        </button>
+                      {% endif %}
+                  </form>
+              </th>
             </tr>
         </thead>
         <tbody>
@@ -105,6 +120,7 @@
               <td>{{registro.ocorrencia}}</td>
               <td>{{registro.alo}}</td>
               <td>{{registro.cpc}}</td>
+              <td>{{registro.promessa}}</td>
               <td>
                   <form action="{% url 'deletar' registro.id %}" method="POST">
                       {% csrf_token %}

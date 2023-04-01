@@ -5,25 +5,25 @@
     <div class="row justify-contente-start">
     <div class="row align-items-center">
     <div class="col">
-    <table class="table table-striped" id="tabela-sist">
+    <table class="table table-striped" id="tabela-carteira">
         <thead>
             <tr>
                 <th scope="col">
-                    Código
+                    Código da carteira
                 </th>
                 <th scope="col">
-                    Sistema
+                    Nome da carteira
                 </th>
             </tr>
         </thead>
         <tbody>
-        {% if sistemas %}
-        {% for i in sistemas %}
+        {% if carteiras %}
+        {% for i in carteiras %}
             <tr>
-                <th>{{i.codigo}}</th>
-                <th>{{i.nome_sistema}}</th>
+                <th>{{i.cod_carteira}}</th>
+                <th>{{i.nome_carteira}}</th>
                 <td>
-                  <form action="{% url 'update_sist' i.codigo %}" method="POST">
+                  <form action="{% url 'update_carteira' i.cod_carteira %}" method="POST">
                       {% csrf_token %}
                       <button type="submit" class="btn btn-light">
                         <span class="material-icons">create</span>
@@ -31,7 +31,7 @@
                   </form>
                 </td>
                 <td>
-                  <form action="{% url 'deletar_sist' i.codigo %}" method="POST">
+                  <form action="{% url 'deletar_carteira' i.cod_carteira %}" method="POST">
                       {% csrf_token %}
                       <button type="submit" class="btn btn-light">
                         <span class="material-icons">delete_forever</span>
@@ -42,14 +42,14 @@
         {% endfor %}
         {% else %}
         <div>
-          <p>Sistemas não encontrados</p>
+          <p>Carteiras não encontrados</p>
         </div>
         {% endif %}
         </tbody>
     </table>
         <div class="d-grid gap-2 col-6 mx-auto">
-            <a href="{% url 'sist_novo' %}"><button class="btn btn-outline-dark" type="button" align="center">
-                Adicionar novo sistema
+            <a href="{% url 'carteira_nova' %}"><button class="btn btn-outline-dark" type="button" align="center">
+                Adicionar nova Carteira
             </button></a>
         </div>
     </div>

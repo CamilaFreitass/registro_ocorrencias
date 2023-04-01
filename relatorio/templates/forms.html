@@ -25,19 +25,29 @@
             <div class="row mb-3">
                 <label align="right" class="col-md-5" for="carteira">Carteira:</label>
                 <div class="col-md-3">
-                    <select class="form-select" id="carteira" name="carteira" required>
-                        <option selected>Escolha a carteira</option>
-                        <option value="Bradesco">Bradesco</option>
-                        <option value="Itau">Itau</option>
-                        <option value="Original">Original</option>
-                        <option value="BTG">BTG-Pactual</option>
+                    <select class="form-select" id="carteira" name="carteira">
+                        {% if carteira %}
+                        {% for i in carteira %}
+                            <option value={{ i.cod_carteira }}>{{i.nome_carteira}}</option>
+                        {% endfor %}
+                        {% else %}
+                            <option value="">Sem carteira</option>
+                        {% endif %}
                     </select>
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-md-5" align="right" for="ocorrencia">Ocorrência:</label>
+                <label align="right" class="col-md-5" for="ocorrencia">Ocorrência:</label>
                 <div class="col-md-3">
-                    <input type="number" class="form-control" id="ocorrencia" name="ocorrencia" placeholder="Digite o número da ocorrência" required>
+                    <select class="form-select" id="ocorrencia" name="ocorrencia">
+                        {% if ocorrencia %}
+                        {% for i in ocorrencia %}
+                            <option value={{ i.num_ocorrencia }}>{{i.desc_ocorrencia}}</option>
+                        {% endfor %}
+                        {% else %}
+                            <option value="">Sem ocorrência</option>
+                        {% endif %}
+                    </select>
                 </div>
             </div>
             <div class="row mb-3">
@@ -53,6 +63,15 @@
                 <label class="col-md-5" align="right" for="cpc">CPC:</label>
                 <div class="col-md-1">
                     <select class="form-select" id="cpc" name="cpc">
+                        <option value=0>0</option>
+                        <option value=1>1</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-md-5" align="right" for="promessa">Promessa:</label>
+                <div class="col-md-1">
+                    <select class="form-select" id="promessa" name="promessa">
                         <option value=0>0</option>
                         <option value=1>1</option>
                     </select>
