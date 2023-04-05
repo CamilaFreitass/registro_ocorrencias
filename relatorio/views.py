@@ -15,7 +15,45 @@ def forms(request):
     dados2 = {'sistema': sistema, 'carteira': carteira, 'ocorrencia': ocorrencia}
     return render(request, 'forms.html', dados2)
 
-def buscar(request):
+
+def lista_classificacao(request):
+    busca = request.GET.get('buscar')
+    querystring = request.META['QUERY_STRING']
+    querydict = QueryDict(querystring).dict()
+    buscar = querydict.get('buscar')
+    ordenar = querydict.get('ordenar')
+    urlx = request.GET.get("ordenar")
+    if busca:
+        lista_registros = (DiscadorOcorrencia.objects.filter(sist__nome_sistema__icontains=busca) |
+                            DiscadorOcorrencia.objects.filter(carteira__nome_carteira__icontains=busca) |
+                            DiscadorOcorrencia.objects.filter(ocorrencia__num_ocorrencia__icontains=busca))
+        dados = {'registros': lista_registros, 'buscar': buscar}
+        if ordenar:
+            lista_registros = (DiscadorOcorrencia.objects.filter(sist__nome_sistema__icontains=busca) |
+                                DiscadorOcorrencia.objects.filter(carteira__nome_carteira__icontains=busca).order_by(ordenar) |
+                                DiscadorOcorrencia.objects.filter(ocorrencia__num_ocorrencia__icontains=busca).order_by(ordenar))
+
+            dados = {'registros': lista_registros, 'buscar': buscar, 'ordenar': ordenar}
+    elif ordenar:
+        lista_registros = DiscadorOcorrencia.objects.order_by(ordenar)
+        dados = {'registros': lista_registros, 'ordenar': ordenar}
+    else:
+        lista_registros = DiscadorOcorrencia.objects.all()
+        dados = {'registros': lista_registros}
+
+    ''' PK '''
+    if dados['registros']:
+        registro = dados['registros'][0]
+        dados['pk'] = registro._meta.db_returning_fields[0].name
+        dados['columns'] = [x.name for x in registro._meta.get_fields() if x.concrete]
+
+    ''' URL '''
+    dados['urlx'] = urlx
+    print(urlx)
+    return render(request, 'listagem.html', dados)
+
+
+def test(request):
     busca = request.GET.get('buscar')
     querystring = request.META['QUERY_STRING']
     querydict = QueryDict(querystring).dict()
@@ -40,8 +78,10 @@ def buscar(request):
     else:
         lista_registros = DiscadorOcorrencia.objects.all()
         dados = {'registros': lista_registros}
+    dados['pk'] = 'id'
+    dados['columns'] = [x.name for x in dados['registros'][0]._meta.get_fields()]
     dados['urlx'] = urlx
-    return render(request, 'listagem.html', dados)
+    return render(request, 'test.html', dados)
 
 
 def processa_formulario(request):
@@ -72,17 +112,30 @@ def processa_formulario(request):
     else:
         return HttpResponse('Erro interno')
 
+
 def deletar(request, id):
     registro = get_object_or_404(DiscadorOcorrencia, pk=id)
     registro.delete()
     return redirect('buscar')
 
+
 ##############SISTEMA###################
 
-def lista_sist(request):
+
+def lista_sistema(request):
+    urlx = request.GET.get("ordenar")
     lista_sistemas = Sistema.objects.all()
-    dados1 = {'sistemas': lista_sistemas}
-    return render(request, 'lista_sist.html', dados1)
+    dados = {'registros': lista_sistemas}
+
+    ''' PK '''
+    if dados['registros']:
+        registro = dados['registros'][0]
+        dados['pk'] = registro._meta.db_returning_fields[0].name
+        dados['columns'] = [x.name for x in registro._meta.get_fields() if x.concrete]
+
+    ''' URL '''
+    dados['urlx'] = urlx
+    return render(request, 'listagem.html', dados)
 
 
 def sist_novo(request):
@@ -122,16 +175,29 @@ def deletar_sist(request, codigo):
     sist.delete()
     return redirect('/lista_sist')
 
+
 ##############CARTEIRA###################
 
 
 def lista_carteira(request):
+    urlx = request.GET.get("ordenar")
     lista_carteiras = Carteira.objects.all()
-    dados2 = {'carteiras': lista_carteiras}
-    return render(request, 'lista_carteira.html', dados2)
+    dados = {'registros': lista_carteiras}
+
+    ''' PK '''
+    if dados['registros']:
+        registro = dados['registros'][0]
+        dados['pk'] = registro._meta.db_returning_fields[0].name
+        dados['columns'] = [x.name for x in registro._meta.get_fields() if x.concrete]
+
+    ''' URL '''
+    dados['urlx'] = urlx
+    return render(request, 'listagem.html', dados)
+
 
 def carteira_nova(request):
     return render(request, 'carteira_nova.html')
+
 
 def processa_carteira(request):
     if request.method == "POST":
@@ -146,10 +212,12 @@ def processa_carteira(request):
     else:
         return HttpResponse('Erro interno')
 
+
 def deletar_carteira(request, cod_carteira):
     cart = get_object_or_404(Carteira, pk=cod_carteira)
     cart.delete()
     return redirect('lista_carteira')
+
 
 def update_carteira(request, cod_carteira):
     carteira = get_object_or_404(Carteira, pk=cod_carteira)
@@ -164,15 +232,29 @@ def editar_carteira(request, cod_carteira):
     carteira.save()
     return redirect('lista_carteira')
 
+
 ##############OCORRÊNCIA###################
 
+
 def lista_ocorrencia(request):
+    urlx = request.GET.get("ordenar")
     lista_ocorrencia = Ocorrencia.objects.all()
-    dados3 = {'ocorrencias': lista_ocorrencia}
-    return render(request, 'lista_ocorrencia.html', dados3)
+    dados = {'registros': lista_ocorrencia}
+
+    ''' PK '''
+    if dados['registros']:
+        registro = dados['registros'][0]
+        dados['pk'] = registro._meta.db_returning_fields[0].name
+        dados['columns'] = [x.name for x in registro._meta.get_fields() if x.concrete]
+
+    ''' URL '''
+    dados['urlx'] = urlx
+    return render(request, 'listagem.html', dados)
+
 
 def ocorrencia_nova(request):
     return render(request, 'ocorrencia_nova.html')
+
 
 def processa_ocorrencia(request):
     if request.method == "POST":

@@ -9,135 +9,50 @@
                 <div class="col-12 search-div">
                     <form method="GET" id="search-form">
                         <div class="input-group mb-3">
-                            <input type="text" name="buscar" class="form-control" placeholder="Buscar carteira" required>
+                            <input type="text" name="buscar" class="form-control" placeholder="Buscar" required>
                             <input type="hidden" name="ordenar" value="{{ordenar}}">
                             <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Buscar</button>
                         </div>
                     </form>
                 </div>
             </div>
+    {% if registros %}
     <table class="table table-striped" id="tabela-listar">
         <thead>
-            <tr>
-              <th scope="col">
-                  <form method="GET">
-                      Sistema
+          <tr>
+             {% for th in columns %}
+               <th scope="col">{{ th }}
+                    <form method="GET">
                       <input type="hidden" name="buscar" value="{{buscar}}">
-                      {% if urlx == '-sist' %}
-                      <button class="btn btn-light" type="submit" name="ordenar" value="sist">
-                          <span class="material-icons">arrow_drop_up</span>
-                      </button>
-                      {% else %}
-                        <button class="btn btn-light" type="submit" name="ordenar" value="-sist">
-                            <span class="material-icons">arrow_drop_down</span>
-                        </button>
-                      {% endif %}
-                  </form>
-              </th>
-              <th scope="col">
-                  <form method="GET">
-                      Carteira
-                       <input type="hidden" name="buscar" value="{{buscar}}">
-                       {% if urlx == '-carteira' %}
-                        <button class="btn btn-light"type="submit" name="ordenar" value="carteira">
+                      {% if urlx == th %}
+                        <button class="btn btn-light" type="submit" name="ordenar" value=-{{th}}>
                             <span class="material-icons">arrow_drop_up</span>
                         </button>
                       {% else %}
-                        <button class="btn btn-light" type="submit" name="ordenar" value="-carteira">
+                        <button class="btn btn-light" type="submit" name="ordenar" value={{th}}>
                             <span class="material-icons">arrow_drop_down</span>
                         </button>
                       {% endif %}
                   </form>
-              </th>
-              <th scope="col">
-                  <form method="GET">
-                      Ocorrência
-                      <input type="hidden" name="buscar" value="{{buscar}}">
-                      {% if urlx == '-ocorrencia' %}
-                        <button  class="btn btn-light" type="submit" name="ordenar" value="ocorrencia">
-                            <span class="material-icons">arrow_drop_up</span>
-                        </button>
-                      {% else %}
-                        <button class="btn btn-light" type="submit" name="ordenar" value="-ocorrencia">
-                            <span class="material-icons">arrow_drop_down</span>
-                        </button>
-                      {% endif %}
-                  </form>
-              </th>
-              <th scope="col">
-                  <form method="GET">
-                      ALO
-                      <input type="hidden" name="buscar" value="{{buscar}}">
-                    {% if urlx == '-alo' %}
-                        <button class="btn btn-light" type="submit" name="ordenar" value="alo">
-                            <span class="material-icons">arrow_drop_up</span>
-                        </button>
-                      {% else %}
-                        <button class="btn btn-light" type="submit" name="ordenar" value="-alo">
-                            <span class="material-icons">arrow_drop_down</span>
-                        </button>
-                      {% endif %}
-                  </form>
-              </th>
-              <th scope="col">
-                  <form method="GET">
-                      CPC
-                      <input type="hidden" name="buscar" value="{{buscar}}">
-                      {% if urlx == '-cpc' %}
-                        <button class="btn btn-light" type="submit" name="ordenar" value="cpc">
-                            <span class="material-icons">arrow_drop_up</span>
-                        </button>
-                      {% else %}
-                        <button class="btn btn-light" type="submit" name="ordenar" value="-cpc">
-                            <span class="material-icons">arrow_drop_down</span>
-                        </button>
-                      {% endif %}
-                  </form>
-              </th>
-              <th scope="col">
-                  <form method="GET">
-                      Promessa
-                      <input type="hidden" name="buscar" value="{{buscar}}">
-                      {% if urlx == '-promessa' %}
-                        <button class="btn btn-light" type="submit" name="ordenar" value="promessa">
-                            <span class="material-icons">arrow_drop_up</span>
-                        </button>
-                      {% else %}
-                        <button class="btn btn-light" type="submit" name="ordenar" value="-promessa">
-                            <span class="material-icons">arrow_drop_down</span>
-                        </button>
-                      {% endif %}
-                  </form>
-              </th>
-            </tr>
+               </th>
+                {% endfor %}
+          </tr>
         </thead>
         <tbody>
-        {% if registros %}
-        {% for registro in registros %}
-            <tr>
-              <th>{{ registro.sist }}</th>
-              <td>{{registro.carteira}}</td>
-              <td>{{registro.ocorrencia}}</td>
-              <td>{{registro.alo}}</td>
-              <td>{{registro.cpc}}</td>
-              <td>{{registro.promessa}}</td>
-              <td>
-                  <form action="{% url 'deletar' registro.id %}" method="POST">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-light">
-                        <span class="material-icons">delete_forever</span>
-                      </button>
-                  </form>
-              </td>
-            </tr>
-        {% endfor %}
-        {% else %}
-        <div>
-          <p>Registro não encontrado</p>
-        </div>
-        {% endif %}
+          {% for registro in registros  %}
+           <tr>
+            {% for h in columns  %}
+             <td>{{ registro|get_dict_item:h }}</td>
+            {% endfor %}
+           </tr>
+          {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <div>
+      <p>Registro não encontrado</p>
+    </div>
+    {% endif %}
         <div class="d-grid gap-2 col-6 mx-auto">
             <a href="{% url 'forms' %}"><button class="btn btn-outline-dark" type="button" align="center">
                 Adicionar novo registro
