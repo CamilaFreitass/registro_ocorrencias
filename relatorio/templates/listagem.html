@@ -44,6 +44,22 @@
             {% for h in columns  %}
              <td>{{ registro|get_dict_item:h }}</td>
             {% endfor %}
+             <td>
+                 {% for p in chave %}
+                 <form method="DELETE">
+    		            <button type="submit" class="btn btn-light" name="update" value={{p}}>
+         		            <span class="material-icons">delete</span>
+    		            </button>
+                 </form>
+                 {% endfor %}
+             </td>
+             <td>
+                 <form method="GET">
+    		            <button type="submit" class="btn btn-light" name="delete" value={{registro.id}}>
+         		            <span class="material-icons">create</span>
+    		            </button>
+                 </form>
+             </td>
            </tr>
           {% endfor %}
         </tbody>
@@ -55,7 +71,7 @@
     {% endif %}
         <div class="d-grid gap-2 col-6 mx-auto">
             <a href="{% url 'forms' %}"><button class="btn btn-outline-dark" type="button" align="center">
-                Adicionar novo registro
+                Adicionar novo
             </button></a>
         </div>
     </div>

@@ -1,11 +1,21 @@
-from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse, request
 from .models import DiscadorOcorrencia, Sistema, Carteira, Ocorrencia
 from django.http import QueryDict
+import requests
 
 
 def index(request):
     return render(request, 'index.html')
+
+
+
+def lista_classificacao(request):
+    url = 'http://127.0.0.1:8000/api/lista_classificacao'
+    params = request.GET.dict()
+    response = requests.get(url, params=params)
+    data = response.json()
+    return render(request, 'listagem.html', data)
 
 
 def forms(request):
@@ -15,73 +25,6 @@ def forms(request):
     dados2 = {'sistema': sistema, 'carteira': carteira, 'ocorrencia': ocorrencia}
     return render(request, 'forms.html', dados2)
 
-
-def lista_classificacao(request):
-    busca = request.GET.get('buscar')
-    querystring = request.META['QUERY_STRING']
-    querydict = QueryDict(querystring).dict()
-    buscar = querydict.get('buscar')
-    ordenar = querydict.get('ordenar')
-    urlx = request.GET.get("ordenar")
-    if busca:
-        lista_registros = (DiscadorOcorrencia.objects.filter(sist__nome_sistema__icontains=busca) |
-                            DiscadorOcorrencia.objects.filter(carteira__nome_carteira__icontains=busca) |
-                            DiscadorOcorrencia.objects.filter(ocorrencia__num_ocorrencia__icontains=busca))
-        dados = {'registros': lista_registros, 'buscar': buscar}
-        if ordenar:
-            lista_registros = (DiscadorOcorrencia.objects.filter(sist__nome_sistema__icontains=busca) |
-                                DiscadorOcorrencia.objects.filter(carteira__nome_carteira__icontains=busca).order_by(ordenar) |
-                                DiscadorOcorrencia.objects.filter(ocorrencia__num_ocorrencia__icontains=busca).order_by(ordenar))
-
-            dados = {'registros': lista_registros, 'buscar': buscar, 'ordenar': ordenar}
-    elif ordenar:
-        lista_registros = DiscadorOcorrencia.objects.order_by(ordenar)
-        dados = {'registros': lista_registros, 'ordenar': ordenar}
-    else:
-        lista_registros = DiscadorOcorrencia.objects.all()
-        dados = {'registros': lista_registros}
-
-    ''' PK '''
-    if dados['registros']:
-        registro = dados['registros'][0]
-        dados['pk'] = registro._meta.db_returning_fields[0].name
-        dados['columns'] = [x.name for x in registro._meta.get_fields() if x.concrete]
-
-    ''' URL '''
-    dados['urlx'] = urlx
-    print(urlx)
-    return render(request, 'listagem.html', dados)
-
-
-def test(request):
-    busca = request.GET.get('buscar')
-    querystring = request.META['QUERY_STRING']
-    querydict = QueryDict(querystring).dict()
-    buscar = querydict.get('buscar')
-    ordenar = querydict.get('ordenar')
-    urlx = request.GET.get("ordenar")
-    if busca:
-        lista_registros = (DiscadorOcorrencia.objects.filter(sist__nome_sistema__icontains=busca) |
-                            DiscadorOcorrencia.objects.filter(carteira__icontains=busca) |
-                            DiscadorOcorrencia.objects.filter(ocorrencia__icontains=busca))
-        dados = {'registros': lista_registros, 'buscar': buscar}
-
-        if ordenar:
-            lista_registros = (DiscadorOcorrencia.objects.filter(sist__nome_sistema__icontains=busca) |
-                                DiscadorOcorrencia.objects.filter(carteira__icontains=busca).order_by(ordenar) |
-                                DiscadorOcorrencia.objects.filter(ocorrencia__icontains=busca).order_by(ordenar))
-
-            dados = {'registros': lista_registros, 'buscar': buscar, 'ordenar': ordenar}
-    elif ordenar:
-        lista_registros = DiscadorOcorrencia.objects.order_by(ordenar)
-        dados = {'registros': lista_registros, 'ordenar': ordenar}
-    else:
-        lista_registros = DiscadorOcorrencia.objects.all()
-        dados = {'registros': lista_registros}
-    dados['pk'] = 'id'
-    dados['columns'] = [x.name for x in dados['registros'][0]._meta.get_fields()]
-    dados['urlx'] = urlx
-    return render(request, 'test.html', dados)
 
 
 def processa_formulario(request):
@@ -122,20 +65,19 @@ def deletar(request, id):
 ##############SISTEMA###################
 
 
+
 def lista_sistema(request):
-    urlx = request.GET.get("ordenar")
-    lista_sistemas = Sistema.objects.all()
-    dados = {'registros': lista_sistemas}
+    url = f'http://127.0.0.1:8000/api/lista_sistema'
+    params = request.GET.dict()
+    response = requests.get(url, params=params)
+    data = response.json()
+    return render(request, 'listagem.html', data)
 
-    ''' PK '''
-    if dados['registros']:
-        registro = dados['registros'][0]
-        dados['pk'] = registro._meta.db_returning_fields[0].name
-        dados['columns'] = [x.name for x in registro._meta.get_fields() if x.concrete]
 
-    ''' URL '''
-    dados['urlx'] = urlx
-    return render(request, 'listagem.html', dados)
+def deletar_sist(request, codigo):
+    sist = get_object_or_404(Sistema, pk=codigo)
+    sist.delete()
+    return redirect('/lista_sist')
 
 
 def sist_novo(request):
@@ -151,15 +93,15 @@ def processa_sist(request):
         else:
             sistema = Sistema(nome_sistema=nome_sistema)
             sistema.save()
-            return redirect('lista_sist')
+            return redirect('lista_sistema')
     else:
         return HttpResponse('Erro interno')
 
 
 def update_sist(request, codigo):
-    sist = get_object_or_404(Sistema, pk=codigo)
-    sists = {"sist": sist}
-    return render(request, 'update_sist.html', sists)
+    alistamento = get_object_or_404(Sistema, pk=codigo)
+    alistamentos = {"sist": alistamento}
+    return render(request, 'update_sist.html', alistamentos)
 
 
 def editar_sist(request, codigo):
@@ -170,29 +112,15 @@ def editar_sist(request, codigo):
     return redirect('/lista_sist')
 
 
-def deletar_sist(request, codigo):
-    sist = get_object_or_404(Sistema, pk=codigo)
-    sist.delete()
-    return redirect('/lista_sist')
-
-
 ##############CARTEIRA###################
 
 
 def lista_carteira(request):
-    urlx = request.GET.get("ordenar")
-    lista_carteiras = Carteira.objects.all()
-    dados = {'registros': lista_carteiras}
-
-    ''' PK '''
-    if dados['registros']:
-        registro = dados['registros'][0]
-        dados['pk'] = registro._meta.db_returning_fields[0].name
-        dados['columns'] = [x.name for x in registro._meta.get_fields() if x.concrete]
-
-    ''' URL '''
-    dados['urlx'] = urlx
-    return render(request, 'listagem.html', dados)
+    url = 'http://127.0.0.1:8000/api/lista_carteira'
+    params = request.GET.dict()
+    response = requests.get(url, params=params)
+    data = response.json()
+    return render(request, 'listagem.html', data)
 
 
 def carteira_nova(request):
@@ -235,21 +163,12 @@ def editar_carteira(request, cod_carteira):
 
 ##############OCORRÊNCIA###################
 
-
 def lista_ocorrencia(request):
-    urlx = request.GET.get("ordenar")
-    lista_ocorrencia = Ocorrencia.objects.all()
-    dados = {'registros': lista_ocorrencia}
-
-    ''' PK '''
-    if dados['registros']:
-        registro = dados['registros'][0]
-        dados['pk'] = registro._meta.db_returning_fields[0].name
-        dados['columns'] = [x.name for x in registro._meta.get_fields() if x.concrete]
-
-    ''' URL '''
-    dados['urlx'] = urlx
-    return render(request, 'listagem.html', dados)
+    url = 'http://127.0.0.1:8000/api/lista_ocorrencia'
+    params = request.GET.dict()
+    response = requests.get(url, params=params)
+    data = response.json()
+    return render(request, 'listagem.html', data)
 
 
 def ocorrencia_nova(request):
