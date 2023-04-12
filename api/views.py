@@ -49,6 +49,17 @@ def lista_classificacao(request):
     dados['registros'] = [{col: get_values(registro, col) for col in dados['columns']} for registro in dados['registros']]
     return JsonResponse(dados)
 
+
+@api_view()
+def delete_classificacao(request, id):
+    try:
+        classificacao = get_object_or_404(DiscadorOcorrencia, pk=id)
+        classificacao.delete()
+        return HttpResponse(status=204)
+    except:
+        return HttpResponse(status=404)
+
+
 #################Sistema##########################
 
 @api_view()
@@ -86,6 +97,15 @@ def lista_sistema(request):
     return JsonResponse(dados)
 
 
+@api_view()
+def delete_sistema(request, codigo):
+    try:
+        sistema = get_object_or_404(Sistema, pk=codigo)
+        sistema.delete()
+        return HttpResponse(status=204)
+    except:
+        return HttpResponse(status=404)
+
 #################Carteira##########################
 
 @api_view()
@@ -122,6 +142,16 @@ def lista_carteira(request):
     dados['registros'] = [{col: get_values(registro, col) for col in dados['columns']} for registro in dados['registros']]
     return JsonResponse(dados)
 
+
+@api_view()
+def delete_carteira(request, cod_carteira):
+    try:
+        carteira = get_object_or_404(Carteira, pk=cod_carteira)
+        carteira.delete()
+        return HttpResponse(status=204)
+    except:
+        return HttpResponse(status=404)
+
 #################Ocorrência##########################
 
 @api_view()
@@ -157,4 +187,14 @@ def lista_ocorrencia(request):
     dados['urlx'] = urlx
     dados['registros'] = [{col: get_values(registro, col) for col in dados['columns']} for registro in dados['registros']]
     return JsonResponse(dados)
+
+
+@api_view()
+def delete_ocorrencia(request, num_ocorrencia):
+    try:
+        ocorrencia = get_object_or_404(Ocorrencia, pk=num_ocorrencia)
+        ocorrencia.delete()
+        return HttpResponse(status=204)
+    except:
+        return HttpResponse(status=404)
 

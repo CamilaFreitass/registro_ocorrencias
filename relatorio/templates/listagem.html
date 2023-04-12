@@ -45,13 +45,34 @@
              <td>{{ registro|get_dict_item:h }}</td>
             {% endfor %}
              <td>
-                 {% for p in chave %}
-                 <form method="DELETE">
-    		            <button type="submit" class="btn btn-light" name="update" value={{p}}>
+                 {% if pk == 'id' %}
+                 <form method="GET" action="{% url 'delete_classificacao' registro.id %}">
+    		            <button type="submit" class="btn btn-light">
          		            <span class="material-icons">delete</span>
     		            </button>
                  </form>
-                 {% endfor %}
+                 {% endif %}
+                 {% if pk == 'codigo' %}
+                 <form method="GET" action="{% url 'delete_sistema' registro.codigo %}">
+    		            <button type="submit" class="btn btn-light">
+         		            <span class="material-icons">delete</span>
+    		            </button>
+                 </form>
+                 {% endif %}
+                 {% if pk == 'num_ocorrencia' %}
+                 <form method="GET" action="{% url 'delete_ocorrencia' registro.num_ocorrencia %}">
+    		            <button type="submit" class="btn btn-light">
+         		            <span class="material-icons">delete</span>
+    		            </button>
+                 </form>
+                 {% endif %}
+                 {% if pk == 'cod_carteira' %}
+                 <form method="GET" action="{% url 'delete_carteira' registro.cod_carteira %}">
+    		            <button type="submit" class="btn btn-light">
+         		            <span class="material-icons">delete</span>
+    		            </button>
+                 </form>
+                 {% endif %}
              </td>
              <td>
                  <form method="GET">

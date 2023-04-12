@@ -18,6 +18,17 @@ def lista_classificacao(request):
     return render(request, 'listagem.html', data)
 
 
+def delete_classificacao(request, id):
+    url = f'http://127.0.0.1:8000/api/delete_classificacao/{id}'
+    params = request.GET.dict()
+    response = requests.get(url, params=params)
+    if response.status_code == 204:
+        print('Classificação deletado com sucesso')
+    else:
+        print(f'Erro ao deletar classificação')
+    return redirect('lista_classificacao')
+
+
 def forms(request):
     sistema = Sistema.objects.all()
     carteira = Carteira.objects.all()
@@ -31,7 +42,7 @@ def processa_formulario(request):
     if request.method == "POST":
         alo = request.POST.get('alo')
         cpc = request.POST.get('cpc')
-        promessa = request.POST.get('cpc')
+        promessa = request.POST.get('promessa')
 
         sist = Sistema.objects.get(codigo=request.POST.get('sist'))
 
@@ -51,15 +62,12 @@ def processa_formulario(request):
                                       cpc=cpc,
                                       promessa=promessa)
             discador.save()
-            return redirect('/buscar')
+            return redirect('/lista_classificacao')
     else:
         return HttpResponse('Erro interno')
 
 
-def deletar(request, id):
-    registro = get_object_or_404(DiscadorOcorrencia, pk=id)
-    registro.delete()
-    return redirect('buscar')
+
 
 
 ##############SISTEMA###################
@@ -74,10 +82,15 @@ def lista_sistema(request):
     return render(request, 'listagem.html', data)
 
 
-def deletar_sist(request, codigo):
-    sist = get_object_or_404(Sistema, pk=codigo)
-    sist.delete()
-    return redirect('/lista_sist')
+def delete_sistema(request, codigo):
+    url = f'http://127.0.0.1:8000/api/delete_sistema/{codigo}'
+    params = request.GET.dict()
+    response = requests.get(url, params=params)
+    if response.status_code == 204:
+        print('Sistema deletado com sucesso')
+    else:
+        print(f'Erro ao deletar sistema')
+    return redirect('lista_sistema')
 
 
 def sist_novo(request):
@@ -141,9 +154,14 @@ def processa_carteira(request):
         return HttpResponse('Erro interno')
 
 
-def deletar_carteira(request, cod_carteira):
-    cart = get_object_or_404(Carteira, pk=cod_carteira)
-    cart.delete()
+def delete_carteira(request, cod_carteira):
+    url = f'http://127.0.0.1:8000/api/delete_carteira/{cod_carteira}'
+    params = request.GET.dict()
+    response = requests.get(url, params=params)
+    if response.status_code == 204:
+        print('Carteira deletada com sucesso')
+    else:
+        print(f'Erro ao deletar carteira')
     return redirect('lista_carteira')
 
 
@@ -189,3 +207,13 @@ def processa_ocorrencia(request):
             return redirect('lista_ocorrencia')
     else:
         return HttpResponse('Erro interno')
+
+def delete_ocorrencia(request, num_ocorrencia):
+    url = f'http://127.0.0.1:8000/api/delete_ocorrencia/{num_ocorrencia}'
+    params = request.GET.dict()
+    response = requests.get(url, params=params)
+    if response.status_code == 204:
+        print('Item deletado com sucesso')
+    else:
+        print(f'Erro ao deletar item')
+    return redirect('lista_ocorrencia')
