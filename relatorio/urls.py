@@ -19,9 +19,10 @@ urlpatterns = [
     path('lista_classificacao', views.lista_classificacao, name='lista_classificacao'),
     path('lista_ocorrencia', views.lista_ocorrencia, name='lista_ocorrencia'),
     path('ocorrencia_nova/', views.ocorrencia_nova, name='ocorrencia_nova'),
-    path('processa_ocorrencia/', views.processa_ocorrencia, name="processa_ocorrencia"),
     path('delete_ocorrencia/<int:num_ocorrencia>', views.delete_ocorrencia, name='delete_ocorrencia'),
     path('delete_sistema/<int:codigo>', views.delete_sistema, name='delete_sistema'),
     path('delete_classificacao/<int:id>', views.delete_classificacao, name='delete_classificacao'),
     path('delete_carteira/<int:cod_carteira>', views.delete_carteira, name='delete_carteira'),
+    path('create_ocorrencia', views.create_ocorrencia, name='create_ocorrencia'),
+
 ]

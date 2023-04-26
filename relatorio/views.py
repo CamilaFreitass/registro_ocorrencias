@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, request
+from django.http import HttpResponse, JsonResponse
 from .models import DiscadorOcorrencia, Sistema, Carteira, Ocorrencia
-from django.http import QueryDict
 import requests
 
 
@@ -154,6 +153,14 @@ def processa_carteira(request):
         return HttpResponse('Erro interno')
 
 
+def editar_carteira(request, cod_carteira):
+    nome_carteira = request.POST.get("nome_carteira")
+    carteira = Carteira.objects.get(pk=cod_carteira)
+    carteira.nome_carteira = nome_carteira
+    carteira.save()
+    return redirect('lista_carteira')
+
+
 def delete_carteira(request, cod_carteira):
     url = f'http://127.0.0.1:8000/api/delete_carteira/{cod_carteira}'
     params = request.GET.dict()
@@ -168,15 +175,7 @@ def delete_carteira(request, cod_carteira):
 def update_carteira(request, cod_carteira):
     carteira = get_object_or_404(Carteira, pk=cod_carteira)
     carteiras = {"carteira": carteira}
-    return render(request, 'update_carteira.html', carteiras)
-
-
-def editar_carteira(request, cod_carteira):
-    nome_carteira = request.POST.get("nome_carteira")
-    carteira = Carteira.objects.get(pk=cod_carteira)
-    carteira.nome_carteira = nome_carteira
-    carteira.save()
-    return redirect('lista_carteira')
+    return render(request, 'carteira_nova.html', carteiras)
 
 
 ##############OCORRÊNCIA###################
@@ -193,21 +192,6 @@ def ocorrencia_nova(request):
     return render(request, 'ocorrencia_nova.html')
 
 
-def processa_ocorrencia(request):
-    if request.method == "POST":
-        num_ocorrencia = request.POST.get('num_ocorrencia')
-        desc_ocorrencia = request.POST.get('desc_ocorrencia')
-        val_num_ocorrencia = Ocorrencia.objects.filter(num_ocorrencia__icontains=num_ocorrencia)
-        val_desc_ocorrencia = Ocorrencia.objects.filter(desc_ocorrencia__icontains=desc_ocorrencia)
-        if len(val_num_ocorrencia) > 0 or len(val_desc_ocorrencia) > 0:
-            return HttpResponse('Número ou descrição da ocorrência já cadastrado')
-        else:
-            ocorrencia = Ocorrencia(num_ocorrencia=num_ocorrencia, desc_ocorrencia=desc_ocorrencia)
-            ocorrencia.save()
-            return redirect('lista_ocorrencia')
-    else:
-        return HttpResponse('Erro interno')
-
 def delete_ocorrencia(request, num_ocorrencia):
     url = f'http://127.0.0.1:8000/api/delete_ocorrencia/{num_ocorrencia}'
     params = request.GET.dict()
@@ -217,3 +201,24 @@ def delete_ocorrencia(request, num_ocorrencia):
     else:
         print(f'Erro ao deletar item')
     return redirect('lista_ocorrencia')
+
+
+def create_ocorrencia(request):
+    if request.method == 'POST':
+        dados_do_formulário = {
+        'num_ocorrencia': request.POST['num_ocorrencia'],
+        'desc_ocorrencia': request.POST['desc_ocorrencia']
+        }
+
+        response = requests.post('http://127.0.0.1:8000/api/create_ocorrencia/', data=dados_do_formulário)
+
+        if response.status_code == 201:
+            return redirect('lista_ocorrencia')
+        elif response.status_code == 409:
+            return HttpResponse('Número de ocorrência ou descrição já existe')
+        else:
+            return HttpResponse('Erro no POST')
+
+    else:
+        return HttpResponse('Não é POST!')
+

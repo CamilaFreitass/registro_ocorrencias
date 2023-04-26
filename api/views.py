@@ -1,11 +1,9 @@
-from django.shortcuts import render
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from relatorio.models import DiscadorOcorrencia, Sistema, Carteira, Ocorrencia
 from django.http import QueryDict
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.core import serializers
 from django.http import JsonResponse
 from relatorio.templatetags.extras import get_values
 
@@ -152,6 +150,9 @@ def delete_carteira(request, cod_carteira):
     except:
         return HttpResponse(status=404)
 
+
+
+
 #################Ocorrência##########################
 
 @api_view()
@@ -197,4 +198,17 @@ def delete_ocorrencia(request, num_ocorrencia):
         return HttpResponse(status=204)
     except:
         return HttpResponse(status=404)
+
+@api_view(['POST'])
+def create_ocorrencia(request):
+    dados = request.data
+
+    if Ocorrencia.objects.filter(num_ocorrencia=dados['num_ocorrencia']).exists():
+        return HttpResponse(status=409)
+    elif Ocorrencia.objects.filter(desc_ocorrencia=dados['desc_ocorrencia']).exists():
+        return HttpResponse(status=409)
+    else:
+        ocorrencia = Ocorrencia.objects.create(num_ocorrencia=dados['num_ocorrencia'], desc_ocorrencia=dados['desc_ocorrencia'])
+        ocorrencia.save()
+        return HttpResponse(status=201)
 

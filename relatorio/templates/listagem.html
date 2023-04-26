@@ -17,7 +17,7 @@
                 </div>
             </div>
     {% if registros %}
-    <table class="table table-striped" id="tabela-listar">
+    <table class="table table-borderless" id="tabela-listar">
         <thead>
           <tr>
              {% for th in columns %}
@@ -75,11 +75,13 @@
                  {% endif %}
              </td>
              <td>
-                 <form method="GET">
-    		            <button type="submit" class="btn btn-light" name="delete" value={{registro.id}}>
+                 {% if pk == 'cod_carteira' %}
+                 <form method="GET" action="{% url 'update_carteira' registro.cod_carteira %}">
+    		            <button type="submit" class="btn btn-light">
          		            <span class="material-icons">create</span>
     		            </button>
                  </form>
+                 {% endif %}
              </td>
            </tr>
           {% endfor %}

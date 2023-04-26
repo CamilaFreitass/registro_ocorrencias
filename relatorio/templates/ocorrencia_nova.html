@@ -6,7 +6,7 @@
         <h3 align="center">Cadastrar nova ocorrência</h3>
         <br>
         <hr>
-<form action="{% url 'processa_ocorrencia' %}" method="post">{% csrf_token %}
+<form action="{% url 'create_ocorrencia' %}" method="post">{% csrf_token %}
   <div class="form-group row">
     <label for="num_ocorrencia" class="col-sm-2 col-form-label">Número </label>
     <div class="col-sm-4">

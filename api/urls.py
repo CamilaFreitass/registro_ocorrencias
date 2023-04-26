@@ -1,7 +1,10 @@
 from django.urls import path
 from . import views
 from .views import lista_classificacao, lista_sistema, lista_ocorrencia, delete_ocorrencia, delete_sistema
-from .views import delete_classificacao, delete_carteira
+from .views import delete_classificacao, delete_carteira, create_ocorrencia
+
+app_name = 'api'
+
 urlpatterns = [
     path('lista_classificacao', lista_classificacao, name='lista_classificacao'),
     path('lista_sistema', lista_sistema, name='lista_sistema'),
@@ -11,4 +14,5 @@ urlpatterns = [
     path('delete_sistema/<int:codigo>/', delete_sistema, name='delete_sistema'),
     path('delete_classificacao/<int:id>/', delete_classificacao, name='delete_classificacao'),
     path('delete_carteira/<int:cod_carteira>/', delete_carteira, name='delete_carteira'),
+    path('create_ocorrencia/', create_ocorrencia, name='create_ocorrencia'),
 ]
