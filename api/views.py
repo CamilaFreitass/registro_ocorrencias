@@ -2,11 +2,10 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from relatorio.models import DiscadorOcorrencia, Sistema, Carteira, Ocorrencia
 from django.http import QueryDict
-from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from relatorio.templatetags.extras import get_values
-
+from relatorio.forms import OcorrenciaForms
 
 #################Geral##########################
 
@@ -181,7 +180,7 @@ def lista_ocorrencia(request):
     ''' PK '''
     if dados['registros']:
         registro = dados['registros'][0]
-        dados['pk'] = registro._meta.db_returning_fields[0].name
+        dados['pk'] = registro._meta.pk.name  # registro._meta.db_returning_fields[0].name
         dados['columns'] = [x.name for x in registro._meta.get_fields() if x.concrete]
 
     ''' URL '''
@@ -201,14 +200,35 @@ def delete_ocorrencia(request, num_ocorrencia):
 
 @api_view(['POST'])
 def create_ocorrencia(request):
-    dados = request.data
+    form = OcorrenciaForms(request.data)
+    if form.is_valid():
+        campo_unico = form.cleaned_data['num_ocorrencia']
+        numero_existe = Ocorrencia.objects.filter(num_ocorrencia=campo_unico)
+        campo_unico1 = form.cleaned_data['desc_ocorrencia']
+        descricao_existe = Ocorrencia.objects.filter(desc_ocorrencia=campo_unico1)
+        if numero_existe:
+            return HttpResponse(status=409)
+        elif descricao_existe:
+            return HttpResponse(status=409)
+        else:
+            ocorrencia = Ocorrencia(num_ocorrencia=form.cleaned_data['num_ocorrencia'],
+                                    desc_ocorrencia=form.cleaned_data['desc_ocorrencia'])
+            ocorrencia.save()
+            return HttpResponse(status=201)
 
-    if Ocorrencia.objects.filter(num_ocorrencia=dados['num_ocorrencia']).exists():
-        return HttpResponse(status=409)
-    elif Ocorrencia.objects.filter(desc_ocorrencia=dados['desc_ocorrencia']).exists():
-        return HttpResponse(status=409)
-    else:
-        ocorrencia = Ocorrencia.objects.create(num_ocorrencia=dados['num_ocorrencia'], desc_ocorrencia=dados['desc_ocorrencia'])
-        ocorrencia.save()
-        return HttpResponse(status=201)
+
+
+# @api_view(['PUT'])
+# def editar_ocorrencia(request, num_ocorrencia):
+#    ocorrencia = Ocorrencia.objects.filter(pk=num_ocorrencia)
+#    if ocorrencia is None:
+#        return HttpResponse(status=404)
+#    form = OcorrenciaForms(request.data, instance=ocorrencia)
+#    if form.is_valid():
+#        form.save()
+#        return HttpResponse(status=200)
+#    else:
+#        return HttpResponse(status=500)
+
+
 

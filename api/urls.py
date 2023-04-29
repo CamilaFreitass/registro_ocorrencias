@@ -15,4 +15,5 @@ urlpatterns = [
     path('delete_classificacao/<int:id>/', delete_classificacao, name='delete_classificacao'),
     path('delete_carteira/<int:cod_carteira>/', delete_carteira, name='delete_carteira'),
     path('create_ocorrencia/', create_ocorrencia, name='create_ocorrencia'),
+    # path('editar_ocorrencia/<int:num_ocorrencia>/', editar_ocorrencia, name='editar_ocorrencia'),
 ]

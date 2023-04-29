@@ -25,7 +25,7 @@ class DiscadorOcorrencia(models.Model):
 
 
 class Ocorrencia(models.Model):
-    num_ocorrencia = models.AutoField(primary_key=True)
+    num_ocorrencia = models.IntegerField(primary_key=True)
     desc_ocorrencia = models.TextField()
 
     class Meta:

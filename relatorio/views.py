@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from .models import DiscadorOcorrencia, Sistema, Carteira, Ocorrencia
 import requests
-
+from .forms import OcorrenciaForms
 
 def index(request):
     return render(request, 'index.html')
@@ -189,7 +189,14 @@ def lista_ocorrencia(request):
 
 
 def ocorrencia_nova(request):
-    return render(request, 'ocorrencia_nova.html')
+    form = OcorrenciaForms()
+    if request.method == 'POST':
+        form = OcorrenciaForms(request.POST)
+        if form.is_valid():
+            form.save()
+
+    context = {'form': form, 'criar': True}
+    return render(request, 'ocorrencia_nova.html', context)
 
 
 def delete_ocorrencia(request, num_ocorrencia):
@@ -221,4 +228,14 @@ def create_ocorrencia(request):
 
     else:
         return HttpResponse('Não é POST!')
+
+
+def update_ocorrencia(request, num_ocorrencia):
+    ocorrencia = get_object_or_404(Ocorrencia, pk=num_ocorrencia)
+
+    form = OcorrenciaForms(instance=ocorrencia)
+
+    context = {'form': form , 'criar': False}
+
+    return render(request, 'ocorrencia_nova.html', context)
 

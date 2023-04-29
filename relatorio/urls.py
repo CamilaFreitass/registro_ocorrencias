@@ -24,5 +24,6 @@ urlpatterns = [
     path('delete_classificacao/<int:id>', views.delete_classificacao, name='delete_classificacao'),
     path('delete_carteira/<int:cod_carteira>', views.delete_carteira, name='delete_carteira'),
     path('create_ocorrencia', views.create_ocorrencia, name='create_ocorrencia'),
+    path('update_ocorrencia/<int:num_ocorrencia>/', views.update_ocorrencia, name='update_ocorrencia'),
 
 ]
