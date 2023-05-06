@@ -1,8 +1,7 @@
 from django.urls import path
 from . import views
 from .views import lista_classificacao, lista_sistema, lista_ocorrencia, delete_ocorrencia, delete_sistema
-from .views import delete_classificacao, delete_carteira, create_ocorrencia
-
+from .views import delete_classificacao, delete_carteira, create_ocorrencia, update_ocorrencia
 app_name = 'api'
 
 urlpatterns = [
@@ -15,5 +14,5 @@ urlpatterns = [
     path('delete_classificacao/<int:id>/', delete_classificacao, name='delete_classificacao'),
     path('delete_carteira/<int:cod_carteira>/', delete_carteira, name='delete_carteira'),
     path('create_ocorrencia/', create_ocorrencia, name='create_ocorrencia'),
-    # path('editar_ocorrencia/<int:num_ocorrencia>/', editar_ocorrencia, name='editar_ocorrencia'),
+    path('update_ocorrencia/<int:num_ocorrencia>/', update_ocorrencia, name='update_ocorrencia'),
 ]

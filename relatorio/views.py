@@ -195,8 +195,7 @@ def ocorrencia_nova(request):
         if form.is_valid():
             form.save()
 
-    context = {'form': form, 'criar': True}
-    return render(request, 'ocorrencia_nova.html', context)
+    return render(request, 'ocorrencia_nova.html', {'form': form})
 
 
 def delete_ocorrencia(request, num_ocorrencia):
@@ -230,12 +229,45 @@ def create_ocorrencia(request):
         return HttpResponse('Não é POST!')
 
 
+# def update_ocorrencia(request, num_ocorrencia):
+#     # busca a ocorrencia que queremos editar
+#     ocorrencia = get_object_or_404(Ocorrencia, num_ocorrencia=num_ocorrencia)
+#     # preenche o form com os dados da ocorrencia
+#     form = OcorrenciaForms(instance=ocorrencia)
+#     # se a requisição for 'POST' insere os registros alterados no banco de dados
+#     if request.method == 'POST':
+#         form = OcorrenciaForms(request.POST, instance=ocorrencia)
+#         # verifica se o formulário está correto e depois validamos cada campo com cleaned_data
+#         if form.is_valid():
+#             ocorrencia = form.save(commit=False)
+#             ocorrencia.num_ocorrencia = form.cleaned_data['num_ocorrencia']
+#             ocorrencia.desc_ocorrencia = form.cleaned_data['desc_ocorrencia']
+#             ocorrencia.save()
+#             return redirect('lista_ocorrencia')
+#         else:
+#             return render(request, 'ocorrencia_nova.html', {'form': form, 'ocorrencia': ocorrencia})
+#     # se a requisição for 'GET' visualiza o form preenchido
+#     elif request.method == 'GET':
+#         return render(request, 'ocorrencia_nova.html', {'form': form, 'ocorrencia': ocorrencia})
+
+
 def update_ocorrencia(request, num_ocorrencia):
-    ocorrencia = get_object_or_404(Ocorrencia, pk=num_ocorrencia)
-
+    ocorrencia = get_object_or_404(Ocorrencia, num_ocorrencia=num_ocorrencia)
     form = OcorrenciaForms(instance=ocorrencia)
+    if request.method == 'POST':
+        num_ocorrencia = request.POST['num_ocorrencia']
+        desc_ocorrencia = request.POST['desc_ocorrencia']
 
-    context = {'form': form , 'criar': False}
+        data = {'num_ocorrencia': num_ocorrencia,
+                'desc_ocorrencia': desc_ocorrencia}
 
-    return render(request, 'ocorrencia_nova.html', context)
+        response = requests.put(f'http://127.0.0.1:8000/api/update_ocorrencia/{num_ocorrencia}/', data=data)
+
+        if response.status_code == 200:
+            return redirect('lista_ocorrencia')
+        else:
+            return HttpResponse('Ocorrência inválida!')
+    elif request.method == 'GET':
+        return render(request, 'ocorrencia_nova.html', {'form': form, 'ocorrencia': ocorrencia})
+
 

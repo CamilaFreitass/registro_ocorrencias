@@ -6,17 +6,18 @@
         <h3 align="center">Cadastrar nova ocorrência</h3>
         <br>
         <hr>
-    {% if criar == True %}
-        <form action="{% url 'create_ocorrencia' %}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-outline-dark">Enviar</button>
-        </form>
-    {% else %}
-        <form method="post">
+    {% if ocorrencia %}
+        <form method="POST" action=".">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-outline-dark">Atualizar</button>
         </form>
+    {% else %}
+        <form method="POST" action="{% url 'create_ocorrencia' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-outline-dark">Enviar</button>
+        </form>
+    </div>
     {% endif %}
 {% endblock %}

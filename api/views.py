@@ -6,6 +6,8 @@ from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from relatorio.templatetags.extras import get_values
 from relatorio.forms import OcorrenciaForms
+from rest_framework.response import Response
+import requests
 
 #################Geral##########################
 
@@ -217,18 +219,18 @@ def create_ocorrencia(request):
             return HttpResponse(status=201)
 
 
-
-# @api_view(['PUT'])
-# def editar_ocorrencia(request, num_ocorrencia):
-#    ocorrencia = Ocorrencia.objects.filter(pk=num_ocorrencia)
-#    if ocorrencia is None:
-#        return HttpResponse(status=404)
-#    form = OcorrenciaForms(request.data, instance=ocorrencia)
-#    if form.is_valid():
-#        form.save()
-#        return HttpResponse(status=200)
-#    else:
-#        return HttpResponse(status=500)
-
+@api_view(['PUT', 'POST'])
+def update_ocorrencia(request, num_ocorrencia):
+    ocorrencia = get_object_or_404(Ocorrencia, num_ocorrencia=num_ocorrencia)
+    form = OcorrenciaForms(instance=ocorrencia)
+    if form:
+        form = OcorrenciaForms(request.POST, instance=ocorrencia)
+        ocorrencia = form.save(commit=False)
+        ocorrencia.num_ocorrencia = form.cleaned_data['num_ocorrencia']
+        ocorrencia.desc_ocorrencia = form.cleaned_data['desc_ocorrencia']
+        form.save()
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=404)
 
 
