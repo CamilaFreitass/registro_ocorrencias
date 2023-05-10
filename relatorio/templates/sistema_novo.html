@@ -3,17 +3,17 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/forms.css' %}">
     <div class="container" align="center">
-        <h3 align="center">Cadastrar nova carteira</h3>
+        <h3 align="center">Cadastrar nova ocorrência</h3>
         <br>
         <hr>
-    {% if carteira %}
+    {% if sistema %}
         <form method="POST" action=".">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-outline-dark">Atualizar</button>
         </form>
     {% else %}
-        <form method="POST" action="{% url 'create_carteira' %}">
+        <form method="POST" action="{% url 'create_sistema' %}">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-outline-dark">Enviar</button>

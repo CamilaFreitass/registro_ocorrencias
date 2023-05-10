@@ -5,9 +5,8 @@ from django.http import QueryDict
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from relatorio.templatetags.extras import get_values
-from relatorio.forms import OcorrenciaForms
-from rest_framework.response import Response
-import requests
+from relatorio.forms import OcorrenciaForms, SistemaForms, CarteiraForms, DiscadorOcorrenciaForms
+
 
 #################Geral##########################
 
@@ -59,6 +58,49 @@ def delete_classificacao(request, id):
         return HttpResponse(status=404)
 
 
+@api_view(['POST'])
+def create_classificacao(request):
+    form = DiscadorOcorrenciaForms(request.data)
+    if form.is_valid():
+        sist = form.cleaned_data['sist']
+        carteira = form.cleaned_data['carteira']
+        ocorrencia = form.cleaned_data['ocorrencia']
+        alo = form.cleaned_data['alo']
+        cpc = form.cleaned_data['cpc']
+        promessa = form.cleaned_data['promessa']
+        classificacao_existe = DiscadorOcorrencia.objects.filter(sist=sist,
+                                                         carteira=carteira,
+                                                         ocorrencia=ocorrencia,
+                                                         alo=alo,
+                                                         cpc=cpc,
+                                                         promessa=promessa)
+        if classificacao_existe:
+            return HttpResponse(status=409)
+        else:
+            classificacao = DiscadorOcorrencia(sist=form.cleaned_data['sist'],
+                                    carteira=form.cleaned_data['carteira'],
+                                    ocorrencia=form.cleaned_data['ocorrencia'],
+                                    alo=form.cleaned_data['alo'],
+                                    cpc=form.cleaned_data['cpc'],
+                                    promessa=form.cleaned_data['promessa'],)
+            classificacao.save()
+            return HttpResponse(status=201)
+
+
+@api_view(['PUT'])
+def update_classificacao(request, id):
+    classificacao = DiscadorOcorrencia.objects.get(id=id)
+    if request.method == 'PUT':
+        form = DiscadorOcorrenciaForms(request.data, instance=classificacao)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=404)
+    else:
+        return HttpResponse(status=400)
+
+
 #################Sistema##########################
 
 @api_view()
@@ -104,6 +146,36 @@ def delete_sistema(request, codigo):
         return HttpResponse(status=204)
     except:
         return HttpResponse(status=404)
+
+
+@api_view(['POST'])
+def create_sistema(request):
+    form = SistemaForms(request.data)
+    if form.is_valid():
+        campo_unico = form.cleaned_data['nome_sistema']
+        numero_existe = Sistema.objects.filter(nome_sistema=campo_unico)
+        if numero_existe:
+            return HttpResponse(status=409)
+        else:
+            sistema = Sistema(nome_sistema=form.cleaned_data['nome_sistema'])
+            sistema.save()
+            return HttpResponse(status=201)
+
+
+@api_view(['PUT'])
+def update_sistema(request, codigo):
+    sistema = Sistema.objects.get(codigo=codigo)
+    if request.method == 'PUT':
+        form = SistemaForms(request.data, instance=sistema)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=404)
+    else:
+        return HttpResponse(status=400)
+
+
 
 #################Carteira##########################
 
@@ -152,6 +224,32 @@ def delete_carteira(request, cod_carteira):
         return HttpResponse(status=404)
 
 
+@api_view(['POST'])
+def create_carteira(request):
+    form = CarteiraForms(request.data)
+    if form.is_valid():
+        campo_unico = form.cleaned_data['nome_carteira']
+        numero_existe = Carteira.objects.filter(nome_carteira=campo_unico)
+        if numero_existe:
+            return HttpResponse(status=409)
+        else:
+            carteira = Carteira(nome_carteira=form.cleaned_data['nome_carteira'])
+            carteira.save()
+            return HttpResponse(status=201)
+
+
+@api_view(['PUT'])
+def update_carteira(request, cod_carteira):
+    carteira = Carteira.objects.get(cod_carteira=cod_carteira)
+    if request.method == 'PUT':
+        form = CarteiraForms(request.data, instance=carteira)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=404)
+    else:
+        return HttpResponse(status=400)
 
 
 #################Ocorrência##########################
@@ -192,9 +290,9 @@ def lista_ocorrencia(request):
 
 
 @api_view()
-def delete_ocorrencia(request, num_ocorrencia):
+def delete_ocorrencia(request, pk_interna):
     try:
-        ocorrencia = get_object_or_404(Ocorrencia, pk=num_ocorrencia)
+        ocorrencia = get_object_or_404(Ocorrencia, pk=pk_interna)
         ocorrencia.delete()
         return HttpResponse(status=204)
     except:
@@ -219,18 +317,15 @@ def create_ocorrencia(request):
             return HttpResponse(status=201)
 
 
-@api_view(['PUT', 'POST'])
-def update_ocorrencia(request, num_ocorrencia):
-    ocorrencia = get_object_or_404(Ocorrencia, num_ocorrencia=num_ocorrencia)
-    form = OcorrenciaForms(instance=ocorrencia)
-    if form:
-        form = OcorrenciaForms(request.POST, instance=ocorrencia)
-        ocorrencia = form.save(commit=False)
-        ocorrencia.num_ocorrencia = form.cleaned_data['num_ocorrencia']
-        ocorrencia.desc_ocorrencia = form.cleaned_data['desc_ocorrencia']
-        form.save()
-        return HttpResponse(status=200)
+@api_view(['PUT'])
+def update_ocorrencia(request, pk_interna):
+    ocorrencia = Ocorrencia.objects.get(pk_interna=pk_interna)
+    if request.method == 'PUT':
+        form = OcorrenciaForms(request.data, instance=ocorrencia)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=404)
     else:
-        return HttpResponse(status=404)
-
-
+        return HttpResponse(status=400)

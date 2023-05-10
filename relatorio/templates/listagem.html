@@ -58,8 +58,8 @@
     		            </button>
                  </form>
                  {% endif %}
-                 {% if pk == 'num_ocorrencia' %}
-                 <form method="GET" action="{% url 'delete_ocorrencia' registro.num_ocorrencia %}">
+                 {% if pk == 'pk_interna' %}
+                 <form method="GET" action="{% url 'delete_ocorrencia' registro.pk_interna %}">
     		            <button type="submit" class="btn btn-light">
          		            <span class="material-icons">delete</span>
     		            </button>
@@ -74,8 +74,29 @@
                  {% endif %}
              </td>
              <td>
-                 {% if pk == 'num_ocorrencia' %}
-                 <form method="GET" action="{% url 'update_ocorrencia' registro.num_ocorrencia %}">
+                 {% if pk == 'pk_interna' %}
+                 <form method="GET" action="{% url 'update_ocorrencia' registro.pk_interna %}">
+    		            <button type="submit" class="btn btn-light">
+         		            <span class="material-icons">create</span>
+    		            </button>
+                 </form>
+                 {% endif %}
+                 {% if pk == 'codigo' %}
+                 <form method="GET" action="{% url 'update_sistema' registro.codigo %}">
+    		            <button type="submit" class="btn btn-light">
+         		            <span class="material-icons">create</span>
+    		            </button>
+                 </form>
+                 {% endif %}
+                 {% if pk == 'cod_carteira' %}
+                 <form method="GET" action="{% url 'update_carteira' registro.cod_carteira %}">
+    		            <button type="submit" class="btn btn-light">
+         		            <span class="material-icons">create</span>
+    		            </button>
+                 </form>
+                 {% endif %}
+                 {% if pk == 'id' %}
+                 <form method="GET" action="{% url 'update_classificacao' registro.id %}">
     		            <button type="submit" class="btn btn-light">
          		            <span class="material-icons">create</span>
     		            </button>
@@ -92,7 +113,7 @@
     </div>
     {% endif %}
         <div class="d-grid gap-2 col-6 mx-auto">
-            <a href="{% url 'forms' %}"><button class="btn btn-outline-dark" type="button" align="center">
+            <a href="#"><button class="btn btn-outline-dark" type="button" align="center">
                 Adicionar novo
             </button></a>
         </div>

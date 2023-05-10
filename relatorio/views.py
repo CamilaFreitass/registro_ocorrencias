@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from .models import DiscadorOcorrencia, Sistema, Carteira, Ocorrencia
 import requests
-from .forms import OcorrenciaForms
+from .forms import OcorrenciaForms, SistemaForms, CarteiraForms, DiscadorOcorrenciaForms
 
 def index(request):
     return render(request, 'index.html')
@@ -28,43 +28,49 @@ def delete_classificacao(request, id):
     return redirect('lista_classificacao')
 
 
-def forms(request):
-    sistema = Sistema.objects.all()
-    carteira = Carteira.objects.all()
-    ocorrencia = Ocorrencia.objects.all()
-    dados2 = {'sistema': sistema, 'carteira': carteira, 'ocorrencia': ocorrencia}
-    return render(request, 'forms.html', dados2)
+def classificacao_nova(request):
+    form = DiscadorOcorrenciaForms()
+    if request.method == 'POST':
+        form = DiscadorOcorrenciaForms(request.POST)
+        if form.is_valid():
+            form.save()
+
+    return render(request, 'classificacao_nova.html', {'form': form})
 
 
+def create_classificacao(request):
+    if request.method == 'POST':
+        dados_do_formulario = request.POST
 
-def processa_formulario(request):
-    if request.method == "POST":
-        alo = request.POST.get('alo')
-        cpc = request.POST.get('cpc')
-        promessa = request.POST.get('promessa')
+        response = requests.post('http://127.0.0.1:8000/api/create_classificacao/', data=dados_do_formulario)
 
-        sist = Sistema.objects.get(codigo=request.POST.get('sist'))
-
-        carteira = Carteira.objects.get(cod_carteira=request.POST.get('carteira'))
-
-        ocorrencia = Ocorrencia.objects.get(num_ocorrencia=request.POST.get('ocorrencia'))
-
-        disc_ocorrencia = DiscadorOcorrencia.objects.filter(sist=sist, carteira=carteira, ocorrencia=ocorrencia)
-        if len(disc_ocorrencia) > 0:
-            return HttpResponse('Objeto já cadastrado no sistema!')
+        if response.status_code == 201:
+            return redirect('lista_classificacao')
+        elif response.status_code == 409:
+            return HttpResponse('Essa classificação já existe')
         else:
+            return HttpResponse('Erro no POST')
 
-            discador = DiscadorOcorrencia(sist=sist,
-                                      carteira=carteira,
-                                      ocorrencia=ocorrencia,
-                                      alo=alo,
-                                      cpc=cpc,
-                                      promessa=promessa)
-            discador.save()
-            return redirect('/lista_classificacao')
     else:
-        return HttpResponse('Erro interno')
+        return HttpResponse('Não é POST!')
 
+
+def update_classificacao(request, id):
+    classificacao = get_object_or_404(DiscadorOcorrencia, id=id)
+    form = DiscadorOcorrenciaForms(instance=classificacao)
+    if request.method == 'POST':
+
+        data = request.POST.dict()
+        del data['csrfmiddlewaretoken']
+
+        response = requests.put(f'http://127.0.0.1:8000/api/update_classificacao/{id}/', data=data)
+
+        if response.status_code == 200:
+            return redirect('lista_classificacao')
+        else:
+            return HttpResponse('Ocorrência inválida!')
+    elif request.method == 'GET':
+        return render(request, 'classificacao_nova.html', {'form': form, 'classificacao': classificacao})
 
 
 
@@ -92,36 +98,51 @@ def delete_sistema(request, codigo):
     return redirect('lista_sistema')
 
 
-def sist_novo(request):
-    return render(request, 'sist_novo.html')
+def sistema_novo(request):
+    form = SistemaForms()
+    if request.method == 'POST':
+        form = SistemaForms(request.POST)
+        if form.is_valid():
+            form.save()
+
+    return render(request, 'sistema_novo.html', {'form': form})
 
 
-def processa_sist(request):
-    if request.method == "POST":
-        nome_sistema = request.POST.get('nome_sistema')
-        val_sist_novo = Sistema.objects.filter(nome_sistema__icontains=nome_sistema)
-        if len(val_sist_novo) > 0:
-            return HttpResponse('Nome de sistema já cadastrado')
-        else:
-            sistema = Sistema(nome_sistema=nome_sistema)
-            sistema.save()
+def create_sistema(request):
+    if request.method == 'POST':
+        dados_do_formulário = {
+        'nome_sistema': request.POST['nome_sistema']
+        }
+
+        response = requests.post('http://127.0.0.1:8000/api/create_sistema/', data=dados_do_formulário)
+
+        if response.status_code == 201:
             return redirect('lista_sistema')
+        elif response.status_code == 409:
+            return HttpResponse('Sistema já existe')
+        else:
+            return HttpResponse('Erro no POST')
+
     else:
-        return HttpResponse('Erro interno')
+        return HttpResponse('Não é POST!')
 
 
-def update_sist(request, codigo):
-    alistamento = get_object_or_404(Sistema, pk=codigo)
-    alistamentos = {"sist": alistamento}
-    return render(request, 'update_sist.html', alistamentos)
+def update_sistema(request, codigo):
+    sistema = get_object_or_404(Sistema, codigo=codigo)
+    form = SistemaForms(instance=sistema)
+    if request.method == 'POST':
 
+        data = request.POST.dict()
+        del data['csrfmiddlewaretoken']
 
-def editar_sist(request, codigo):
-    nome_sistema = request.POST.get("nome_sistema")
-    sist = Sistema.objects.get(pk=codigo)
-    sist.nome_sistema = nome_sistema
-    sist.save()
-    return redirect('/lista_sist')
+        response = requests.put(f'http://127.0.0.1:8000/api/update_sistema/{codigo}/', data=data)
+
+        if response.status_code == 200:
+            return redirect('lista_sistema')
+        else:
+            return HttpResponse('Sistema inválido!')
+    elif request.method == 'GET':
+        return render(request, 'sistema_novo.html', {'form': form, 'sistema': sistema})
 
 
 ##############CARTEIRA###################
@@ -136,29 +157,13 @@ def lista_carteira(request):
 
 
 def carteira_nova(request):
-    return render(request, 'carteira_nova.html')
+    form = CarteiraForms()
+    if request.method == 'POST':
+        form = CarteiraForms(request.POST)
+        if form.is_valid():
+            form.save()
 
-
-def processa_carteira(request):
-    if request.method == "POST":
-        nome_carteira = request.POST.get('nome_carteira')
-        val_carteira_nova = Carteira.objects.filter(nome_carteira__icontains=nome_carteira)
-        if len(val_carteira_nova) > 0:
-            return HttpResponse('Nome da carteira já cadastrado')
-        else:
-            carteira = Carteira(nome_carteira=nome_carteira)
-            carteira.save()
-            return redirect('lista_carteira')
-    else:
-        return HttpResponse('Erro interno')
-
-
-def editar_carteira(request, cod_carteira):
-    nome_carteira = request.POST.get("nome_carteira")
-    carteira = Carteira.objects.get(pk=cod_carteira)
-    carteira.nome_carteira = nome_carteira
-    carteira.save()
-    return redirect('lista_carteira')
+    return render(request, 'carteira_nova.html', {'form': form})
 
 
 def delete_carteira(request, cod_carteira):
@@ -172,10 +177,41 @@ def delete_carteira(request, cod_carteira):
     return redirect('lista_carteira')
 
 
+def create_carteira(request):
+    if request.method == 'POST':
+        dados_do_formulário = {
+        'nome_carteira': request.POST['nome_carteira']
+        }
+
+        response = requests.post('http://127.0.0.1:8000/api/create_carteira/', data=dados_do_formulário)
+
+        if response.status_code == 201:
+            return redirect('lista_carteira')
+        elif response.status_code == 409:
+            return HttpResponse('Carteira já existe')
+        else:
+            return HttpResponse('Erro no POST')
+
+    else:
+        return HttpResponse('Não é POST!')
+
+
 def update_carteira(request, cod_carteira):
-    carteira = get_object_or_404(Carteira, pk=cod_carteira)
-    carteiras = {"carteira": carteira}
-    return render(request, 'carteira_nova.html', carteiras)
+    carteira = get_object_or_404(Carteira, cod_carteira=cod_carteira)
+    form = CarteiraForms(instance=carteira)
+    if request.method == 'POST':
+
+        data = request.POST.dict()
+        del data['csrfmiddlewaretoken']
+
+        response = requests.put(f'http://127.0.0.1:8000/api/update_carteira/{cod_carteira}/', data=data)
+
+        if response.status_code == 200:
+            return redirect('lista_carteira')
+        else:
+            return HttpResponse('Carteira inválida!')
+    elif request.method == 'GET':
+        return render(request, 'carteira_nova.html', {'form': form, 'carteira': carteira})
 
 
 ##############OCORRÊNCIA###################
@@ -198,8 +234,8 @@ def ocorrencia_nova(request):
     return render(request, 'ocorrencia_nova.html', {'form': form})
 
 
-def delete_ocorrencia(request, num_ocorrencia):
-    url = f'http://127.0.0.1:8000/api/delete_ocorrencia/{num_ocorrencia}'
+def delete_ocorrencia(request, pk_interna):
+    url = f'http://127.0.0.1:8000/api/delete_ocorrencia/{pk_interna}'
     params = request.GET.dict()
     response = requests.get(url, params=params)
     if response.status_code == 204:
@@ -229,39 +265,16 @@ def create_ocorrencia(request):
         return HttpResponse('Não é POST!')
 
 
-# def update_ocorrencia(request, num_ocorrencia):
-#     # busca a ocorrencia que queremos editar
-#     ocorrencia = get_object_or_404(Ocorrencia, num_ocorrencia=num_ocorrencia)
-#     # preenche o form com os dados da ocorrencia
-#     form = OcorrenciaForms(instance=ocorrencia)
-#     # se a requisição for 'POST' insere os registros alterados no banco de dados
-#     if request.method == 'POST':
-#         form = OcorrenciaForms(request.POST, instance=ocorrencia)
-#         # verifica se o formulário está correto e depois validamos cada campo com cleaned_data
-#         if form.is_valid():
-#             ocorrencia = form.save(commit=False)
-#             ocorrencia.num_ocorrencia = form.cleaned_data['num_ocorrencia']
-#             ocorrencia.desc_ocorrencia = form.cleaned_data['desc_ocorrencia']
-#             ocorrencia.save()
-#             return redirect('lista_ocorrencia')
-#         else:
-#             return render(request, 'ocorrencia_nova.html', {'form': form, 'ocorrencia': ocorrencia})
-#     # se a requisição for 'GET' visualiza o form preenchido
-#     elif request.method == 'GET':
-#         return render(request, 'ocorrencia_nova.html', {'form': form, 'ocorrencia': ocorrencia})
 
-
-def update_ocorrencia(request, num_ocorrencia):
-    ocorrencia = get_object_or_404(Ocorrencia, num_ocorrencia=num_ocorrencia)
+def update_ocorrencia(request, pk_interna):
+    ocorrencia = get_object_or_404(Ocorrencia, pk_interna=pk_interna)
     form = OcorrenciaForms(instance=ocorrencia)
     if request.method == 'POST':
-        num_ocorrencia = request.POST['num_ocorrencia']
-        desc_ocorrencia = request.POST['desc_ocorrencia']
 
-        data = {'num_ocorrencia': num_ocorrencia,
-                'desc_ocorrencia': desc_ocorrencia}
+        data = request.POST.dict()
+        del data['csrfmiddlewaretoken']
 
-        response = requests.put(f'http://127.0.0.1:8000/api/update_ocorrencia/{num_ocorrencia}/', data=data)
+        response = requests.put(f'http://127.0.0.1:8000/api/update_ocorrencia/{pk_interna}/', data=data)
 
         if response.status_code == 200:
             return redirect('lista_ocorrencia')
@@ -269,5 +282,7 @@ def update_ocorrencia(request, num_ocorrencia):
             return HttpResponse('Ocorrência inválida!')
     elif request.method == 'GET':
         return render(request, 'ocorrencia_nova.html', {'form': form, 'ocorrencia': ocorrencia})
+
+
 
 
