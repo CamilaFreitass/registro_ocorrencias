@@ -1,16 +1,9 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
 
 class Carteira(models.Model):
     cod_carteira = models.AutoField(primary_key=True)
-    nome_carteira = models.TextField(unique=True)
+    nome_carteira = models.CharField(max_length=50, unique=True)
 
     class Meta:
         db_table = 'CARTEIRA'
@@ -34,7 +27,7 @@ class DiscadorOcorrencia(models.Model):
 class Ocorrencia(models.Model):
     pk_interna = models.AutoField(primary_key=True)
     num_ocorrencia = models.IntegerField(unique=True)
-    desc_ocorrencia = models.TextField(unique=True)
+    desc_ocorrencia = models.CharField(max_length=100, unique=True)
 
     class Meta:
         db_table = 'OCORRENCIA'
@@ -44,7 +37,7 @@ class Ocorrencia(models.Model):
 
 class Sistema(models.Model):
     codigo = models.AutoField(primary_key=True)
-    nome_sistema = models.TextField(unique=True)
+    nome_sistema = models.CharField(max_length=50, unique=True)
 
     class Meta:
         db_table = 'SISTEMA'

@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from .models import DiscadorOcorrencia, Sistema, Carteira, Ocorrencia
 import requests
 from .forms import OcorrenciaForms, SistemaForms, CarteiraForms, DiscadorOcorrenciaForms
+from django.contrib import messages
+from django.contrib.messages import constants
 
 def index(request):
     return render(request, 'index.html')
@@ -22,9 +24,9 @@ def delete_classificacao(request, id):
     params = request.GET.dict()
     response = requests.get(url, params=params)
     if response.status_code == 204:
-        print('Classificação deletado com sucesso')
+        messages.add_message(request, constants.SUCCESS, 'Classificação deletada com sucesso')
     else:
-        print(f'Erro ao deletar classificação')
+        messages.add_message(request, constants.ERROR, 'Erro ao deletar classificação')
     return redirect('lista_classificacao')
 
 
@@ -45,14 +47,17 @@ def create_classificacao(request):
         response = requests.post('http://127.0.0.1:8000/api/create_classificacao/', data=dados_do_formulario)
 
         if response.status_code == 201:
+            messages.add_message(request, constants.SUCCESS, 'Classificação criada com sucesso.')
             return redirect('lista_classificacao')
         elif response.status_code == 409:
-            return HttpResponse('Essa classificação já existe')
+            messages.add_message(request, constants.ERROR, 'Essa classificação já existe.')
+            return redirect('classificacao_nova')
         else:
-            return HttpResponse('Erro no POST')
-
+            messages.add_message(request, constants.WARNING, 'Classificação inválida!')
+            return redirect('classificacao_nova')
     else:
-        return HttpResponse('Não é POST!')
+        messages.add_message(request, constants.WARNING, 'Erro interno!')
+        return redirect('classificacao_nova')
 
 
 def update_classificacao(request, id):
@@ -66,9 +71,14 @@ def update_classificacao(request, id):
         response = requests.put(f'http://127.0.0.1:8000/api/update_classificacao/{id}/', data=data)
 
         if response.status_code == 200:
+            messages.add_message(request, constants.SUCCESS, 'Classificação atualizada com sucesso')
+            return redirect('lista_classificacao')
+        elif response.status_code == 409:
+            messages.add_message(request, constants.ERROR, 'Essa classificação já existe')
             return redirect('lista_classificacao')
         else:
-            return HttpResponse('Ocorrência inválida!')
+            messages.add_message(request, constants.WARNING, 'Classificação inválida')
+            return redirect('lista_classificacao')
     elif request.method == 'GET':
         return render(request, 'classificacao_nova.html', {'form': form, 'classificacao': classificacao})
 
@@ -92,9 +102,9 @@ def delete_sistema(request, codigo):
     params = request.GET.dict()
     response = requests.get(url, params=params)
     if response.status_code == 204:
-        print('Sistema deletado com sucesso')
+        messages.add_message(request, constants.SUCCESS, 'Sistema deletado com sucesso')
     else:
-        print(f'Erro ao deletar sistema')
+        messages.add_message(request, constants.ERROR, 'Erro ao deletar sistema')
     return redirect('lista_sistema')
 
 
@@ -110,21 +120,19 @@ def sistema_novo(request):
 
 def create_sistema(request):
     if request.method == 'POST':
-        dados_do_formulário = {
-        'nome_sistema': request.POST['nome_sistema']
-        }
+        dados_do_formulario = request.POST
 
-        response = requests.post('http://127.0.0.1:8000/api/create_sistema/', data=dados_do_formulário)
+        response = requests.post('http://127.0.0.1:8000/api/create_sistema/', data=dados_do_formulario)
 
         if response.status_code == 201:
+            messages.add_message(request, constants.SUCCESS, 'Sistema criado com sucesso.')
             return redirect('lista_sistema')
-        elif response.status_code == 409:
-            return HttpResponse('Sistema já existe')
         else:
-            return HttpResponse('Erro no POST')
-
+            messages.add_message(request, constants.ERROR, 'Esse sistema já existe.')
+            return redirect('sistema_novo')
     else:
-        return HttpResponse('Não é POST!')
+        messages.add_message(request, constants.WARNING, 'Erro interno!')
+        return redirect('sistema_novo')
 
 
 def update_sistema(request, codigo):
@@ -138,9 +146,11 @@ def update_sistema(request, codigo):
         response = requests.put(f'http://127.0.0.1:8000/api/update_sistema/{codigo}/', data=data)
 
         if response.status_code == 200:
+            messages.add_message(request, constants.SUCCESS, 'Sistema atualizado com sucesso')
             return redirect('lista_sistema')
         else:
-            return HttpResponse('Sistema inválido!')
+            messages.add_message(request, constants.WARNING, 'Sistema inválido!')
+            return redirect('lista_sistema')
     elif request.method == 'GET':
         return render(request, 'sistema_novo.html', {'form': form, 'sistema': sistema})
 
@@ -171,29 +181,27 @@ def delete_carteira(request, cod_carteira):
     params = request.GET.dict()
     response = requests.get(url, params=params)
     if response.status_code == 204:
-        print('Carteira deletada com sucesso')
+        messages.add_message(request, constants.SUCCESS, 'Carteira deletada com sucesso')
     else:
-        print(f'Erro ao deletar carteira')
+        messages.add_message(request, constants.ERROR, 'Erro ao deletar carteira')
     return redirect('lista_carteira')
 
 
 def create_carteira(request):
     if request.method == 'POST':
-        dados_do_formulário = {
-        'nome_carteira': request.POST['nome_carteira']
-        }
+        dados_do_formulario = request.POST
 
-        response = requests.post('http://127.0.0.1:8000/api/create_carteira/', data=dados_do_formulário)
+        response = requests.post('http://127.0.0.1:8000/api/create_carteira/', data=dados_do_formulario)
 
         if response.status_code == 201:
+            messages.add_message(request, constants.SUCCESS, 'Carteira criada com sucesso.')
             return redirect('lista_carteira')
-        elif response.status_code == 409:
-            return HttpResponse('Carteira já existe')
         else:
-            return HttpResponse('Erro no POST')
-
+            messages.add_message(request, constants.ERROR, 'Essa carteira já existe.')
+            return redirect('carteira_nova')
     else:
-        return HttpResponse('Não é POST!')
+        messages.add_message(request, constants.WARNING, 'Erro interno!')
+        return redirect('carteira_nova')
 
 
 def update_carteira(request, cod_carteira):
@@ -207,9 +215,11 @@ def update_carteira(request, cod_carteira):
         response = requests.put(f'http://127.0.0.1:8000/api/update_carteira/{cod_carteira}/', data=data)
 
         if response.status_code == 200:
+            messages.add_message(request, constants.SUCCESS, 'Carteira atualizada com sucesso')
             return redirect('lista_carteira')
         else:
-            return HttpResponse('Carteira inválida!')
+            messages.add_message(request, constants.WARNING, 'Carteira inválida')
+            return redirect('lista_carteira')
     elif request.method == 'GET':
         return render(request, 'carteira_nova.html', {'form': form, 'carteira': carteira})
 
@@ -239,30 +249,27 @@ def delete_ocorrencia(request, pk_interna):
     params = request.GET.dict()
     response = requests.get(url, params=params)
     if response.status_code == 204:
-        print('Item deletado com sucesso')
+        messages.add_message(request, constants.SUCCESS, 'Ocorrência deletada com sucesso')
     else:
-        print(f'Erro ao deletar item')
+        messages.add_message(request, constants.ERROR, 'Erro ao deletar ocorrência')
     return redirect('lista_ocorrencia')
 
 
 def create_ocorrencia(request):
     if request.method == 'POST':
-        dados_do_formulário = {
-        'num_ocorrencia': request.POST['num_ocorrencia'],
-        'desc_ocorrencia': request.POST['desc_ocorrencia']
-        }
+        dados_do_formulario = request.POST
 
-        response = requests.post('http://127.0.0.1:8000/api/create_ocorrencia/', data=dados_do_formulário)
+        response = requests.post('http://127.0.0.1:8000/api/create_ocorrencia/', data=dados_do_formulario)
 
         if response.status_code == 201:
+            messages.add_message(request, constants.SUCCESS, 'Ocorrência criada com sucesso.')
             return redirect('lista_ocorrencia')
-        elif response.status_code == 409:
-            return HttpResponse('Número de ocorrência ou descrição já existe')
         else:
-            return HttpResponse('Erro no POST')
-
+            messages.add_message(request, constants.ERROR, 'Essa ocorrência já existe.')
+            return redirect('ocorrencia_nova')
     else:
-        return HttpResponse('Não é POST!')
+        messages.add_message(request, constants.WARNING, 'Erro interno!')
+        return redirect('ocorrencia_nova')
 
 
 
@@ -277,9 +284,11 @@ def update_ocorrencia(request, pk_interna):
         response = requests.put(f'http://127.0.0.1:8000/api/update_ocorrencia/{pk_interna}/', data=data)
 
         if response.status_code == 200:
+            messages.add_message(request, constants.SUCCESS, 'Ocorrência atualizada com sucesso')
             return redirect('lista_ocorrencia')
         else:
-            return HttpResponse('Ocorrência inválida!')
+            messages.add_message(request, constants.WARNING, 'Ocorrência inválida')
+            return redirect('lista_ocorrencia')
     elif request.method == 'GET':
         return render(request, 'ocorrencia_nova.html', {'form': form, 'ocorrencia': ocorrencia})
 

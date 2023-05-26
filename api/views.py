@@ -65,15 +65,9 @@ def create_classificacao(request):
         sist = form.cleaned_data['sist']
         carteira = form.cleaned_data['carteira']
         ocorrencia = form.cleaned_data['ocorrencia']
-        alo = form.cleaned_data['alo']
-        cpc = form.cleaned_data['cpc']
-        promessa = form.cleaned_data['promessa']
         classificacao_existe = DiscadorOcorrencia.objects.filter(sist=sist,
                                                          carteira=carteira,
-                                                         ocorrencia=ocorrencia,
-                                                         alo=alo,
-                                                         cpc=cpc,
-                                                         promessa=promessa)
+                                                         ocorrencia=ocorrencia)
         if classificacao_existe:
             return HttpResponse(status=409)
         else:
@@ -93,8 +87,17 @@ def update_classificacao(request, id):
     if request.method == 'PUT':
         form = DiscadorOcorrenciaForms(request.data, instance=classificacao)
         if form.is_valid():
-            form.save()
-            return HttpResponse(status=200)
+            sist = form.cleaned_data['sist']
+            carteira = form.cleaned_data['carteira']
+            ocorrencia = form.cleaned_data['ocorrencia']
+            classificacao_existe = DiscadorOcorrencia.objects.filter(sist=sist,
+                                                                     carteira=carteira,
+                                                                     ocorrencia=ocorrencia)
+            if classificacao_existe:
+                return HttpResponse(status=409)
+            else:
+                form.save()
+                return HttpResponse(status=200)
         else:
             return HttpResponse(status=404)
     else:
@@ -152,15 +155,11 @@ def delete_sistema(request, codigo):
 def create_sistema(request):
     form = SistemaForms(request.data)
     if form.is_valid():
-        campo_unico = form.cleaned_data['nome_sistema']
-        numero_existe = Sistema.objects.filter(nome_sistema=campo_unico)
-        if numero_existe:
-            return HttpResponse(status=409)
-        else:
-            sistema = Sistema(nome_sistema=form.cleaned_data['nome_sistema'])
-            sistema.save()
-            return HttpResponse(status=201)
-
+        sistema = Sistema(nome_sistema=form.cleaned_data['nome_sistema'])
+        sistema.save()
+        return HttpResponse(status=201)
+    else:
+        return HttpResponse(status=409)
 
 @api_view(['PUT'])
 def update_sistema(request, codigo):
@@ -306,9 +305,7 @@ def create_ocorrencia(request):
         numero_existe = Ocorrencia.objects.filter(num_ocorrencia=campo_unico)
         campo_unico1 = form.cleaned_data['desc_ocorrencia']
         descricao_existe = Ocorrencia.objects.filter(desc_ocorrencia=campo_unico1)
-        if numero_existe:
-            return HttpResponse(status=409)
-        elif descricao_existe:
+        if numero_existe or descricao_existe:
             return HttpResponse(status=409)
         else:
             ocorrencia = Ocorrencia(num_ocorrencia=form.cleaned_data['num_ocorrencia'],

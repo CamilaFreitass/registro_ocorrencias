@@ -1,5 +1,8 @@
 from django import forms
 from .models import Ocorrencia, Sistema, Carteira, DiscadorOcorrencia
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+
 
 class OcorrenciaForms(forms.ModelForm):
     class Meta:
@@ -11,6 +14,10 @@ class SistemaForms(forms.ModelForm):
     class Meta:
         model = Sistema
         fields = ['nome_sistema']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper
 
 
 class CarteiraForms(forms.ModelForm):

@@ -15,6 +15,14 @@
                     </form>
                 </div>
             </div>
+        {% if messages %}
+            {% for i in messages %}
+                <div class="alert {{ i.tags }} alert-dismissible fade show" role="alert">
+                    {{i}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
     {% if registros %}
     <table class="table table-borderless" id="tabela-listar">
         <thead>
@@ -112,11 +120,7 @@
       <p>Registro não encontrado</p>
     </div>
     {% endif %}
-        <div class="d-grid gap-2 col-6 mx-auto">
-            <a href="#"><button class="btn btn-outline-dark" type="button" align="center">
-                Adicionar novo
-            </button></a>
-        </div>
+
     </div>
     </div>
     </div>

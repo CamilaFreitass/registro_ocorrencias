@@ -1,9 +1,102 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-
-
-
+<div class="container px-4 py-5" id="hanging-icons">
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-4">
+        <div class="col d-flex align-items-start">
+            <div class="icon-square bg-light text-dark flex-shrink-0 me-3">
+                <span class="material-icons">
+                    list
+                </span>
+            </div>
+            <div>
+                <h2>Classificações</h2>
+                <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence
+                    and probably just keep going until we run out of words.</p>
+                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group" align="center">
+                    <a class="btn btn-dark" href="/lista_classificacao" role="button">Lista classific.</a>
+                    <a class="btn btn-outline-dark" href="/classificacao_nova" role="button">Nova</a>
+                </div>
+                <br>
+                <br>
+                <div>
+                    <a href="{% url 'exporta_classificacao' %}" class="btn btn-primary btn-custom" align="center" style="width: 100%;">
+                        Download excel
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            <div class="icon-square bg-light text-dark flex-shrink-0 me-3">
+                <span class="material-icons">
+                    analytics
+                </span>
+            </div>
+            <div>
+                <h2>Sistemas</h2>
+                <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence
+                    and probably just keep going until we run out of words.</p>
+                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group" align="center">
+                    <a class="btn btn-dark" href="/lista_sistema" role="button">Lista sistemas</a>
+                    <a class="btn btn-outline-dark" href="/sistema_novo" role="button">Novo</a>
+                </div>
+                <br>
+                <br>
+                <div>
+                    <a href="{% url 'exporta_sistema' %}" class="btn btn-primary btn-custom" align="center" style="width: 100%;">
+                        Download excel
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            <div class="icon-square bg-light text-dark flex-shrink-0 me-3">
+                <span class="material-icons">
+                    wallet
+                </span>
+            </div>
+            <div>
+                <h2>Carteiras</h2>
+                <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence
+                    and probably just keep going until we run out of words.</p>
+                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group" align="center">
+                    <a class="btn btn-dark" href="/lista_carteira" role="button">Lista carteiras</a>
+                    <a class="btn btn-outline-dark" href="/carteira_nova" role="button">Nova</a>
+                </div>
+                <br>
+                <br>
+                <div>
+                    <a href="{% url 'exporta_carteira' %}" class="btn btn-primary btn-custom" align="center" style="width: 100%;">
+                        Download excel
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            <div class="icon-square bg-light text-dark flex-shrink-0 me-3">
+                <span class="material-icons">
+                    contact_phone
+                </span>
+            </div>
+            <div>
+                <h2>Ocorrências</h2>
+                <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence
+                    and probably just keep going until we run out of words.</p>
+                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group" align="center">
+                    <a class="btn btn-dark" href="/lista_ocorrencia" role="button">Lista ocorrências</a>
+                    <a class="btn btn-outline-dark" href="/ocorrencia_nova/" role="button">Nova</a>
+                </div>
+                <br>
+                <br>
+                <div>
+                    <a href="{% url 'exporta_ocorrencia' %}" class="btn btn-primary btn-custom" align="center" style="width: 100%;">
+                        Download excel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 
