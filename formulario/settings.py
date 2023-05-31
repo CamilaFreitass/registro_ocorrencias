@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'api',
     'crispy_forms',
     'crispy_bootstrap5',
+    'drf_spectacular',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -139,3 +140,4 @@ MESSAGE_TAGS = {
     constants.INFO: 'alert-info',
     constants.WARNING: 'alert-warning',
 }
+

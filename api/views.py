@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from relatorio.templatetags.extras import get_values
 from relatorio.forms import OcorrenciaForms, SistemaForms, CarteiraForms, DiscadorOcorrenciaForms
-
+from django.core.paginator import Paginator
 
 #################Geral##########################
 
@@ -18,23 +18,82 @@ def lista_classificacao(request):
     buscar = querydict.get('buscar')
     ordenar = querydict.get('ordenar')
     urlx = request.GET.get("ordenar")
+    parametro_page = request.GET.get('page', '1')
+    parametro_limit = request.GET.get('limit', '2')
+    if not (parametro_limit.isdigit() and int(parametro_limit) > 0):
+        parametro_limit = '2'
     if busca:
         lista_registros = (DiscadorOcorrencia.objects.filter(sist__nome_sistema__icontains=busca) |
                             DiscadorOcorrencia.objects.filter(carteira__nome_carteira__icontains=busca) |
                             DiscadorOcorrencia.objects.filter(ocorrencia__num_ocorrencia__icontains=busca))
-        dados = {'registros': lista_registros, 'buscar': buscar}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        pagina_atual = registros_paginator.get_page(parametro_page)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual, 'buscar': buscar,
+                 'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                 'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                 'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                 'lista': lista}
+
+
         if ordenar:
             lista_registros = (DiscadorOcorrencia.objects.filter(sist__nome_sistema__icontains=busca) |
                                 DiscadorOcorrencia.objects.filter(carteira__nome_carteira__icontains=busca).order_by(ordenar) |
                                 DiscadorOcorrencia.objects.filter(ocorrencia__num_ocorrencia__icontains=busca).order_by(ordenar))
-
-            dados = {'registros': lista_registros, 'buscar': buscar, 'ordenar': ordenar}
+            registros_paginator = Paginator(lista_registros, parametro_limit)
+            nu_pages = registros_paginator.num_pages
+            lista = list(range(1, nu_pages + 1))
+            pagina_atual = registros_paginator.get_page(parametro_page)
+            num_pagina_atual = pagina_atual.number
+            tem_prox_pagina = pagina_atual.has_next()
+            num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+            tem_page_anterior = pagina_atual.has_previous()
+            num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+            dados = {'registros': pagina_atual, 'buscar': buscar, 'ordenar': ordenar,
+                     'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                     'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                     'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                     'lista': lista}
     elif ordenar:
         lista_registros = DiscadorOcorrencia.objects.order_by(ordenar)
-        dados = {'registros': lista_registros, 'ordenar': ordenar}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        pagina_atual = registros_paginator.get_page(parametro_page)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual, 'ordenar': ordenar,
+                 'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                 'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                 'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                 'lista': lista}
     else:
         lista_registros = DiscadorOcorrencia.objects.all()
-        dados = {'registros': lista_registros}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        try:
+            pagina_atual = registros_paginator.get_page(parametro_page)
+        except:
+            pagina_atual = registros_paginator.get_page(1)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual,'tem_page_anterior': tem_page_anterior,
+                 'num_page_anterior': num_page_anterior, 'nu_pages': nu_pages,
+                 'num_pagina_atual': num_pagina_atual, 'tem_prox_pagina': tem_prox_pagina,
+                 'num_prox_pagina': num_prox_pagina, 'lista': lista}
 
     ''' PK '''
     if dados['registros']:
@@ -114,20 +173,78 @@ def lista_sistema(request):
     buscar = querydict.get('buscar')
     ordenar = querydict.get('ordenar')
     urlx = request.GET.get('ordenar')
+    parametro_page = request.GET.get('page', '1')
+    parametro_limit = request.GET.get('limit', '2')
+    if not (parametro_limit.isdigit() and int(parametro_limit) > 0):
+        parametro_limit = '2'
     if busca:
         lista_registros = (Sistema.objects.filter(codigo__icontains=busca) |
                         Sistema.objects.filter(nome_sistema__icontains=busca))
-        dados = {'registros': lista_registros, 'buscar': buscar}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        pagina_atual = registros_paginator.get_page(parametro_page)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual, 'buscar': buscar,
+                 'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                 'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                 'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                 'lista': lista}
         if ordenar:
             lista_registros = (Sistema.objects.filter(codigo__icontains=busca).order_by(ordenar) |
                                Sistema.objects.filter(nome_sistema__icontains=busca).order_by(ordenar))
-            dados = {'registros': lista_registros, 'buscar': buscar, 'ordenar': ordenar}
+            registros_paginator = Paginator(lista_registros, parametro_limit)
+            nu_pages = registros_paginator.num_pages
+            lista = list(range(1, nu_pages + 1))
+            pagina_atual = registros_paginator.get_page(parametro_page)
+            num_pagina_atual = pagina_atual.number
+            tem_prox_pagina = pagina_atual.has_next()
+            num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+            tem_page_anterior = pagina_atual.has_previous()
+            num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+            dados = {'registros': pagina_atual, 'buscar': buscar, 'ordenar': ordenar,
+                     'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                     'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                     'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                     'lista': lista}
     elif ordenar:
         lista_registros = Sistema.objects.order_by(ordenar)
-        dados = {'registros': lista_registros, 'ordenar': ordenar}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        pagina_atual = registros_paginator.get_page(parametro_page)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual, 'ordenar': ordenar,
+                 'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                 'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                 'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                 'lista': lista}
     else:
         lista_registros = Sistema.objects.all()
-        dados = {'registros': lista_registros}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        try:
+            pagina_atual = registros_paginator.get_page(parametro_page)
+        except:
+            pagina_atual = registros_paginator.get_page(1)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual,'tem_page_anterior': tem_page_anterior,
+                 'num_page_anterior': num_page_anterior, 'nu_pages': nu_pages,
+                 'num_pagina_atual': num_pagina_atual, 'tem_prox_pagina': tem_prox_pagina,
+                 'num_prox_pagina': num_prox_pagina, 'lista': lista}
 
     ''' PK '''
     if dados['registros']:
@@ -186,20 +303,78 @@ def lista_carteira(request):
     buscar = querydict.get('buscar')
     ordenar = querydict.get('ordenar')
     urlx = request.GET.get("ordenar")
+    parametro_page = request.GET.get('page', '1')
+    parametro_limit = request.GET.get('limit', '2')
+    if not (parametro_limit.isdigit() and int(parametro_limit) > 0):
+        parametro_limit = '2'
     if busca:
         lista_registros = (Carteira.objects.filter(cod_carteira__icontains=busca) |
                         Carteira.objects.filter(nome_carteira__icontains=busca))
-        dados = {'registros': lista_registros, 'buscar': buscar}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        pagina_atual = registros_paginator.get_page(parametro_page)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual, 'buscar': buscar,
+                 'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                 'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                 'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                 'lista': lista}
         if ordenar:
             lista_registros = (Carteira.objects.filter(cod_carteira__icontains=busca).order_by(ordenar) |
                                Carteira.objects.filter(nome_carteira__icontains=busca).order_by(ordenar))
-            dados = {'registros': lista_registros, 'buscar': buscar, 'ordenar': ordenar}
+            registros_paginator = Paginator(lista_registros, parametro_limit)
+            nu_pages = registros_paginator.num_pages
+            lista = list(range(1, nu_pages + 1))
+            pagina_atual = registros_paginator.get_page(parametro_page)
+            num_pagina_atual = pagina_atual.number
+            tem_prox_pagina = pagina_atual.has_next()
+            num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+            tem_page_anterior = pagina_atual.has_previous()
+            num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+            dados = {'registros': pagina_atual, 'buscar': buscar, 'ordenar': ordenar,
+                     'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                     'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                     'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                     'lista': lista}
     elif ordenar:
         lista_registros = Carteira.objects.order_by(ordenar)
-        dados = {'registros': lista_registros, 'ordenar': ordenar}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        pagina_atual = registros_paginator.get_page(parametro_page)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual, 'ordenar': ordenar,
+                 'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                 'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                 'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                 'lista': lista}
     else:
         lista_registros = Carteira.objects.all()
-        dados = {'registros': lista_registros}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        try:
+            pagina_atual = registros_paginator.get_page(parametro_page)
+        except:
+            pagina_atual = registros_paginator.get_page(1)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual, 'tem_page_anterior': tem_page_anterior,
+                 'num_page_anterior': num_page_anterior, 'nu_pages': nu_pages,
+                 'num_pagina_atual': num_pagina_atual, 'tem_prox_pagina': tem_prox_pagina,
+                 'num_prox_pagina': num_prox_pagina, 'lista': lista}
 
     ''' PK '''
     if dados['registros']:
@@ -261,20 +436,78 @@ def lista_ocorrencia(request):
     buscar = querydict.get('buscar')
     ordenar = querydict.get('ordenar')
     urlx = request.GET.get("ordenar")
+    parametro_page = request.GET.get('page', '1')
+    parametro_limit = request.GET.get('limit', '2')
+    if not (parametro_limit.isdigit() and int(parametro_limit) > 0):
+        parametro_limit = '2'
     if busca:
         lista_registros = (Ocorrencia.objects.filter(num_ocorrencia__icontains=busca) |
                         Ocorrencia.objects.filter(desc_ocorrencia__icontains=busca))
-        dados = {'registros': lista_registros, 'buscar': buscar}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        pagina_atual = registros_paginator.get_page(parametro_page)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual, 'buscar': buscar,
+                 'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                 'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                 'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                 'lista': lista}
         if ordenar:
             lista_registros = (Ocorrencia.objects.filter(num_ocorrencia__icontains=busca).order_by(ordenar) |
                                Ocorrencia.objects.filter(desc_ocorrencia__icontains=busca).order_by(ordenar))
-            dados = {'registros': lista_registros, 'buscar': buscar, 'ordenar': ordenar}
+            registros_paginator = Paginator(lista_registros, parametro_limit)
+            nu_pages = registros_paginator.num_pages
+            lista = list(range(1, nu_pages + 1))
+            pagina_atual = registros_paginator.get_page(parametro_page)
+            num_pagina_atual = pagina_atual.number
+            tem_prox_pagina = pagina_atual.has_next()
+            num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+            tem_page_anterior = pagina_atual.has_previous()
+            num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+            dados = {'registros': pagina_atual, 'buscar': buscar, 'ordenar': ordenar,
+                     'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                     'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                     'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                     'lista': lista}
     elif ordenar:
         lista_registros = Ocorrencia.objects.order_by(ordenar)
-        dados = {'registros': lista_registros, 'ordenar': ordenar}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        pagina_atual = registros_paginator.get_page(parametro_page)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual, 'ordenar': ordenar,
+                 'tem_page_anterior': tem_page_anterior, 'num_page_anterior': num_page_anterior,
+                 'nu_pages': nu_pages, 'num_pagina_atual': num_pagina_atual,
+                 'tem_prox_pagina': tem_prox_pagina, 'num_prox_pagina': num_prox_pagina,
+                 'lista': lista}
     else:
         lista_registros = Ocorrencia.objects.all()
-        dados = {'registros': lista_registros}
+        registros_paginator = Paginator(lista_registros, parametro_limit)
+        nu_pages = registros_paginator.num_pages
+        lista = list(range(1, nu_pages + 1))
+        try:
+            pagina_atual = registros_paginator.get_page(parametro_page)
+        except:
+            pagina_atual = registros_paginator.get_page(1)
+        num_pagina_atual = pagina_atual.number
+        tem_prox_pagina = pagina_atual.has_next()
+        num_prox_pagina = pagina_atual.next_page_number() if tem_prox_pagina else None
+        tem_page_anterior = pagina_atual.has_previous()
+        num_page_anterior = pagina_atual.previous_page_number() if tem_page_anterior else None
+        dados = {'registros': pagina_atual, 'tem_page_anterior': tem_page_anterior,
+                 'num_page_anterior': num_page_anterior, 'nu_pages': nu_pages,
+                 'num_pagina_atual': num_pagina_atual, 'tem_prox_pagina': tem_prox_pagina,
+                 'num_prox_pagina': num_prox_pagina, 'lista': lista}
 
     ''' PK '''
     if dados['registros']:

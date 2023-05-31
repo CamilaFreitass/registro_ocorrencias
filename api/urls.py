@@ -3,6 +3,8 @@ from . import views
 from .views import lista_classificacao, lista_sistema, lista_ocorrencia, delete_ocorrencia, delete_sistema
 from .views import delete_classificacao, delete_carteira, create_ocorrencia, update_ocorrencia, create_sistema
 from .views import update_sistema, update_carteira, create_carteira, update_classificacao, create_classificacao
+
+
 app_name = 'api'
 
 urlpatterns = [

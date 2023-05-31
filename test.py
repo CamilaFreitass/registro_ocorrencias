@@ -1,2 +1,0 @@
-print('camila')
-print('thales')
