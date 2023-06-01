@@ -58,9 +58,8 @@ http://127.0.0.1:8000/
 
 ### Página com resultado da listagem de classificações:
 
-![](imagens/6fb50912-3e35-45c8-8bce-8c9f5a65580f.jpg)
+![](imagens/92542070-fa7a-4729-ae95-fbb759816eb6.jpg)
 
 ### Página do formulário de ocorrências:
 
-![](imagens/92542070-fa7a-4729-ae95-fbb759816eb6.jpg)
-
+![](imagens/6fb50912-3e35-45c8-8bce-8c9f5a65580f.jpg)
