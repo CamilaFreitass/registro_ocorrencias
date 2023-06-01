@@ -52,3 +52,15 @@ http://127.0.0.1:8000/
 * Ocorrências 
 * Sistema 
 
+### Página Inicial da aplicação: 
+
+!(imagens/1ebc3c80-4c68-4c73-ac65-49adc9452233.jpg)
+
+### Página com resultado da listagem de classificações:
+
+!(imagens/6fb50912-3e35-45c8-8bce-8c9f5a65580f.jpg)
+
+### Página do formulário de ocorrências:
+
+!(imagens/92542070-fa7a-4729-ae95-fbb759816eb6.jpg)
+
