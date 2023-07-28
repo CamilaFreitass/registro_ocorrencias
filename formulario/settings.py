@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 from django.contrib.messages import constants
+import django_on_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -141,3 +142,4 @@ MESSAGE_TAGS = {
     constants.WARNING: 'alert-warning',
 }
 
+django_on_heroku.settings(locals())
