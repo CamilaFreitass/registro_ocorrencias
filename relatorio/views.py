@@ -6,6 +6,7 @@ from .forms import OcorrenciaForms, SistemaForms, CarteiraForms, DiscadorOcorren
 from django.contrib import messages
 from django.contrib.messages import constants
 
+
 def index(request):
     return render(request, 'index.html')
 
