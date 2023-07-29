@@ -1,4 +1,5 @@
 .idea
 Teste2.db
 venv
+.env
 */__pychache__/
