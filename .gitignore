@@ -1,5 +1,5 @@
 .idea
-Teste2.db
+db.sqlite3
 venv
 .env
 */__pychache__/
