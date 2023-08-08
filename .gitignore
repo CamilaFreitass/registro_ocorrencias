@@ -41,8 +41,8 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-static/
-media/
+formulario/static/
+formulario/media/
 
 # Unit test / coverage reports
 htmlcov/
