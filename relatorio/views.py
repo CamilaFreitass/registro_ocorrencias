@@ -228,7 +228,7 @@ def update_carteira(request, cod_carteira):
 ##############OCORRÊNCIA###################
 
 def lista_ocorrencia(request):
-    url = 'http://localhost:8000/api/lista_ocorrencia'
+    url = 'http://localhost:80/api/lista_ocorrencia'
     params = request.GET.dict()
     response = requests.get(url, params=params)
     data = response.json()
