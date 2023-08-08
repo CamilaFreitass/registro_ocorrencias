@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from django.contrib.messages import constants
 import django_on_heroku
-from decouple import config
+from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -18,8 +18,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool, default=False)
 
-ALLOWED_HOSTS = ['c8662s.vps-kinghost.net', '189.126.105.233', 'http://c8662s.vps-kinghost.net',
-                 'http://reg-oco.camidev.com', 'https://reg-oco.camidev.com']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=[], cast=Csv())
 
 
 
