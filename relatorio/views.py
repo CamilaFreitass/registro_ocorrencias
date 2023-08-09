@@ -7,13 +7,22 @@ from django.contrib import messages
 from django.contrib.messages import constants
 from decouple import config
 
+
+if config('DEBUG') == 'True':
+    localhost = 'localhost:8000'
+else:
+    localhost = 'reg-oco.camidev.com'
+
+print(localhost)
+
+
 def index(request):
     return render(request, 'index.html')
 
 
 
 def lista_classificacao(request):
-    url = f'http://{config("localhost")}/api/lista_classificacao'
+    url = f'http://{localhost}/api/lista_classificacao'
     params = request.GET.dict()
     response = requests.get(url, params=params)
     data = response.json()
@@ -21,7 +30,7 @@ def lista_classificacao(request):
 
 
 def delete_classificacao(request, id):
-    url = f'http://{config("localhost")}/api/delete_classificacao/{id}'
+    url = f'http://{localhost}/api/delete_classificacao/{id}'
     params = request.GET.dict()
     response = requests.get(url, params=params)
     if response.status_code == 204:
@@ -45,7 +54,7 @@ def create_classificacao(request):
     if request.method == 'POST':
         dados_do_formulario = request.POST
 
-        response = requests.post(f'http://{config("localhost")}/api/create_classificacao/', data=dados_do_formulario)
+        response = requests.post(f'http://{localhost}/api/create_classificacao/', data=dados_do_formulario)
 
         if response.status_code == 201:
             messages.add_message(request, constants.SUCCESS, 'Classificação criada com sucesso.')
@@ -69,7 +78,7 @@ def update_classificacao(request, id):
         data = request.POST.dict()
         del data['csrfmiddlewaretoken']
 
-        response = requests.put(f'http://{config("localhost")}/api/update_classificacao/{id}/', data=data)
+        response = requests.put(f'http://{localhost}/api/update_classificacao/{id}/', data=data)
 
         if response.status_code == 200:
             messages.add_message(request, constants.SUCCESS, 'Classificação atualizada com sucesso')
@@ -91,7 +100,7 @@ def update_classificacao(request, id):
 
 
 def lista_sistema(request):
-    url = f'http://{config("localhost")}/api/lista_sistema'
+    url = f'http://{localhost}/api/lista_sistema'
     params = request.GET.dict()
     response = requests.get(url, params=params)
     data = response.json()
@@ -99,7 +108,7 @@ def lista_sistema(request):
 
 
 def delete_sistema(request, codigo):
-    url = f'http://{config("localhost")}/api/delete_sistema/{codigo}'
+    url = f'http://{localhost}/api/delete_sistema/{codigo}'
     params = request.GET.dict()
     response = requests.get(url, params=params)
     if response.status_code == 204:
@@ -123,7 +132,7 @@ def create_sistema(request):
     if request.method == 'POST':
         dados_do_formulario = request.POST
 
-        response = requests.post(f'http://{config("localhost")}/api/create_sistema/', data=dados_do_formulario)
+        response = requests.post(f'http://{localhost}/api/create_sistema/', data=dados_do_formulario)
 
         if response.status_code == 201:
             messages.add_message(request, constants.SUCCESS, 'Sistema criado com sucesso.')
@@ -144,7 +153,7 @@ def update_sistema(request, codigo):
         data = request.POST.dict()
         del data['csrfmiddlewaretoken']
 
-        response = requests.put(f'http://{config("localhost")}/api/update_sistema/{codigo}/', data=data)
+        response = requests.put(f'http://{localhost}/api/update_sistema/{codigo}/', data=data)
 
         if response.status_code == 200:
             messages.add_message(request, constants.SUCCESS, 'Sistema atualizado com sucesso')
@@ -160,7 +169,7 @@ def update_sistema(request, codigo):
 
 
 def lista_carteira(request):
-    url = f'http://{config("localhost")}/api/lista_carteira'
+    url = f'http://{localhost}/api/lista_carteira'
     params = request.GET.dict()
     response = requests.get(url, params=params)
     data = response.json()
@@ -178,7 +187,7 @@ def carteira_nova(request):
 
 
 def delete_carteira(request, cod_carteira):
-    url = f'http://{config("localhost")}/api/delete_carteira/{cod_carteira}'
+    url = f'http://{localhost}/api/delete_carteira/{cod_carteira}'
     params = request.GET.dict()
     response = requests.get(url, params=params)
     if response.status_code == 204:
@@ -192,7 +201,7 @@ def create_carteira(request):
     if request.method == 'POST':
         dados_do_formulario = request.POST
 
-        response = requests.post(f'http://{config("localhost")}/api/create_carteira/', data=dados_do_formulario)
+        response = requests.post(f'http://{localhost}/api/create_carteira/', data=dados_do_formulario)
 
         if response.status_code == 201:
             messages.add_message(request, constants.SUCCESS, 'Carteira criada com sucesso.')
@@ -213,7 +222,7 @@ def update_carteira(request, cod_carteira):
         data = request.POST.dict()
         del data['csrfmiddlewaretoken']
 
-        response = requests.put(f'http://{config("localhost")}/api/update_carteira/{cod_carteira}/', data=data)
+        response = requests.put(f'http://{localhost}/api/update_carteira/{cod_carteira}/', data=data)
 
         if response.status_code == 200:
             messages.add_message(request, constants.SUCCESS, 'Carteira atualizada com sucesso')
@@ -228,7 +237,7 @@ def update_carteira(request, cod_carteira):
 ##############OCORRÊNCIA###################
 
 def lista_ocorrencia(request):
-    url = f'http://{config("localhost")}/api/lista_ocorrencia'
+    url = f'http://{localhost}/api/lista_ocorrencia'
     params = request.GET.dict()
     response = requests.get(url, params=params)
     data = response.json()
@@ -246,7 +255,7 @@ def ocorrencia_nova(request):
 
 
 def delete_ocorrencia(request, pk_interna):
-    url = f'http://{config("localhost")}/api/delete_ocorrencia/{pk_interna}'
+    url = f'http://{localhost}/api/delete_ocorrencia/{pk_interna}'
     params = request.GET.dict()
     response = requests.get(url, params=params)
     if response.status_code == 204:
@@ -260,7 +269,7 @@ def create_ocorrencia(request):
     if request.method == 'POST':
         dados_do_formulario = request.POST
 
-        response = requests.post(f'http://{config("localhost")}/api/create_ocorrencia/', data=dados_do_formulario)
+        response = requests.post(f'http://{localhost}/api/create_ocorrencia/', data=dados_do_formulario)
 
         if response.status_code == 201:
             messages.add_message(request, constants.SUCCESS, 'Ocorrência criada com sucesso.')
@@ -282,7 +291,7 @@ def update_ocorrencia(request, pk_interna):
         data = request.POST.dict()
         del data['csrfmiddlewaretoken']
 
-        response = requests.put(f'http://{config("localhost")}/api/update_ocorrencia/{pk_interna}/', data=data)
+        response = requests.put(f'http://{localhost}/api/update_ocorrencia/{pk_interna}/', data=data)
 
         if response.status_code == 200:
             messages.add_message(request, constants.SUCCESS, 'Ocorrência atualizada com sucesso')
