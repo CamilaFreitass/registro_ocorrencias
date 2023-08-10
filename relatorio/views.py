@@ -37,7 +37,6 @@ def classificacao_nova(request):
         form = DiscadorOcorrenciaForms(request.POST)
         if form.is_valid():
             form.save()
-
     return render(request, 'classificacao_nova.html', {'form': form})
 
 
@@ -115,7 +114,6 @@ def sistema_novo(request):
         form = SistemaForms(request.POST)
         if form.is_valid():
             form.save()
-
     return render(request, 'sistema_novo.html', {'form': form})
 
 
@@ -173,7 +171,6 @@ def carteira_nova(request):
         form = CarteiraForms(request.POST)
         if form.is_valid():
             form.save()
-
     return render(request, 'carteira_nova.html', {'form': form})
 
 
@@ -241,7 +238,6 @@ def ocorrencia_nova(request):
         form = OcorrenciaForms(request.POST)
         if form.is_valid():
             form.save()
-
     return render(request, 'ocorrencia_nova.html', {'form': form})
 
 
