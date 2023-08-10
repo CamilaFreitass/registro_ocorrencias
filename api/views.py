@@ -146,17 +146,8 @@ def update_classificacao(request, id):
     if request.method == 'PUT':
         form = DiscadorOcorrenciaForms(request.data, instance=classificacao)
         if form.is_valid():
-            sist = form.cleaned_data['sist']
-            carteira = form.cleaned_data['carteira']
-            ocorrencia = form.cleaned_data['ocorrencia']
-            classificacao_existe = DiscadorOcorrencia.objects.filter(sist=sist,
-                                                                     carteira=carteira,
-                                                                     ocorrencia=ocorrencia)
-            if classificacao_existe:
-                return HttpResponse(status=409)
-            else:
-                form.save()
-                return HttpResponse(status=200)
+            form.save()
+            return HttpResponse(status=200)
         else:
             return HttpResponse(status=404)
     else:

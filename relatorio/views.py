@@ -13,8 +13,6 @@ if config('DEBUG') == 'True':
 else:
     localhost = 'reg-oco.camidev.com'
 
-print(localhost)
-
 
 def index(request):
     return render(request, 'index.html')
