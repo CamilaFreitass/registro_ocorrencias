@@ -12,18 +12,6 @@ class Carteira(models.Model):
         return self.nome_carteira
 
 
-class DiscadorOcorrencia(models.Model):
-    sist = models.ForeignKey('Sistema', on_delete=models.CASCADE, db_column='SIST')  # Field name made lowercase.
-    carteira = models.ForeignKey(Carteira, on_delete=models.CASCADE, db_column='carteira')
-    ocorrencia = models.ForeignKey('Ocorrencia', on_delete=models.CASCADE, db_column='ocorrencia')
-    alo = models.IntegerField()
-    cpc = models.IntegerField()
-    promessa = models.IntegerField()
-
-    class Meta:
-        db_table = 'DISCADOR_OCORRENCIA'
-
-
 class Ocorrencia(models.Model):
     pk_interna = models.AutoField(primary_key=True)
     num_ocorrencia = models.IntegerField(unique=True)
@@ -35,6 +23,7 @@ class Ocorrencia(models.Model):
     def __str__(self):
         return self.desc_ocorrencia
 
+
 class Sistema(models.Model):
     codigo = models.AutoField(primary_key=True)
     nome_sistema = models.CharField(max_length=50, unique=True)
@@ -44,3 +33,15 @@ class Sistema(models.Model):
 
     def __str__(self):
         return self.nome_sistema
+
+
+class DiscadorOcorrencia(models.Model):
+    sist = models.ForeignKey(Sistema, on_delete=models.CASCADE, db_column='SIST')  # Field name made lowercase.
+    carteira = models.ForeignKey(Carteira, on_delete=models.CASCADE, db_column='carteira')
+    ocorrencia = models.ForeignKey(Ocorrencia, on_delete=models.CASCADE, db_column='ocorrencia')
+    alo = models.IntegerField()
+    cpc = models.IntegerField()
+    promessa = models.IntegerField()
+
+    class Meta:
+        db_table = 'DISCADOR_OCORRENCIA'
