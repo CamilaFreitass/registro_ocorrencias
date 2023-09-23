@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'formulario.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'Teste2.db',
+        'NAME': 'temp/Teste2.db',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
